@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Groupomania</title>
+
+    <script src="https://unpkg.com/vue@3"></script>
+</head>
+
+<body>
+    <div id="app">
+        <form action="" method="get" class="inscription-form">
+            <div class="form-example">
+                <label for="firstname"></label>
+                <input type="text" name="firstname" id="firstname" placeholder=" Prénom" required>
+            </div>
+            <br>
+            <div class="form-example">
+                <label for="lastname"></label>
+                <input type="text" name="lastname" id="lastname" placeholder=" Nom" required>
+            </div>
+            <br>
+            <div class="form-example">
+                <label for="email"></label>
+                <input type="text" name="email" id="email" placeholder=" Adresse e-mail" required>
+            </div>
+            <br>
+            <div class="form-example">
+                <label for="password"></label>
+                <input type="password" name="password" id="password" placeholder=" Mot de passe" required>
+            </div>
+            <br>
+            <div class="form-example">
+                <input type="submit" value="S'inscrire !">
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const vm = Vue.createApp({
+            data() {
+                return {
+                   
+                }
+            }
+        }).mount('#app')
+    </script>
+</body>
+
+</html>
