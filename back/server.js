@@ -25,8 +25,15 @@ require("dotenv").config();
 
 // we import the cors options
 var corsOptions = {
-	origin: "http://127.0.0.1:8081",
+	origin: "http://127.0.0.1:8080",
 };
+
+
+// setHeader('Access-Control-Allow-Origin', '*');
+// setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
+// setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+	
+
 
 // importing db confing to allow our database to work
 const db = require("./config/db.config");

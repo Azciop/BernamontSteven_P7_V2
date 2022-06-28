@@ -1,1 +1,1 @@
-{"name":"MongoDB Logs","hostname":"DESKTOP-GCDPJIL","pid":6332,"level":30,"dbQuery":"db.users.createIndex({\"email\":1}, {});","msg":"","time":"2022-06-20T13:25:15.385Z","v":0}
+{"name":"MongoDB Logs","hostname":"DESKTOP-GCDPJIL","pid":21032,"level":30,"dbQuery":"db.users.createIndex({\"email\":1}, {});","msg":"","time":"2022-06-24T12:27:42.133Z","v":0}
