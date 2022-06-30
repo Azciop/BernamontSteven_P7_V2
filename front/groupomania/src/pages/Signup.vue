@@ -3,7 +3,7 @@
 		<div id="signup_form">
 			<h1>S'inscrire</h1>
 			<p>
-				Pas encore membre ?<router-link to="/login">
+				Déjà membre ?<router-link to="/login">
 					> Cliquez ici &lt;</router-link
 				>
 			</p>

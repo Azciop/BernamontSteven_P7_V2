@@ -8,12 +8,14 @@
 
   import signup from './pages/Signup.vue';
   import login from './pages/Login.vue';
+  import accueil from './pages/Accueil.vue';
   
 export default {
   name: 'App',
   components: {
     signup,
-    login
+    login,
+    accueil
   }
 }
 </script>

@@ -1,10 +1,15 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Login from './pages/Login.vue';
 import Signup from './pages/Signup.vue';
+import Accueil from './pages/Accueil.vue';
 import PageNotFound from './pages/pageNotFound.vue';
 
 
 const routes = [
+    {
+        path: '/accueil',
+        component: Accueil,
+    },
     {
         path: '/login',
         component: Login,
@@ -21,6 +26,7 @@ const routes = [
           requiresAuth: false
         }
       },  
+      
 ];
 
 const router = createRouter({
