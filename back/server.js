@@ -23,16 +23,13 @@ const mongoSanitize = require("express-mongo-sanitize");
 // Init .env config
 require("dotenv").config();
 
-// we import the cors options
-var corsOptions = {
-	origin: "http://127.0.0.1:8080",
-};
+
 
 
 app.use(function (req, res, next) {
 
     // Website you wish to allow to connect
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8888');
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8080');
 
     // Request methods you wish to allow
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
@@ -53,7 +50,7 @@ app.use(function (req, res, next) {
 // importing db confing to allow our database to work
 const db = require("./config/db.config");
 
-app.use(cors(corsOptions));
+
 
 // parse requests of content-type - application/json
 app.use(express.json());

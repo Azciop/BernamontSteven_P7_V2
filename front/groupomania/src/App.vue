@@ -9,17 +9,31 @@
   import signup from './pages/Signup.vue';
   import login from './pages/Login.vue';
   import accueil from './pages/Accueil.vue';
+  import account from './pages/Account.vue';
   
 export default {
   name: 'App',
   components: {
     signup,
     login,
-    accueil
+    accueil,
+    account,
   }
 }
 </script>
 
 <style>
+ @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300&display=swap');
+ #app {
+  font-family: 'Lato', sans-serif;
+ }
+   html {
+    
+   }
+ body {
+	margin: 0;
+
+}
+
 
 </style>
