@@ -27,9 +27,6 @@ export default {
  #app {
   font-family: 'Lato', sans-serif;
  }
-   html {
-    
-   }
  body {
 	margin: 0;
 
