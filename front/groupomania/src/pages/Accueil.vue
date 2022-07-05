@@ -8,8 +8,7 @@
 						</router-link>
 					</li>
 					<li>
-						<router-link class="text-decoration" to="/login">Se déconnecter
-						</router-link>
+						<p class="text-decoration cursor-pointer" v-on:click="logOut">Se déconnecter</p>
 					</li>
 				</ul>
 			</nav>
@@ -20,8 +19,16 @@
 export default {
 	name: "accueil",
 	data() {
-		return {};
+		return {
+
+		};
 	},
+	methods: {
+		logOut(){
+			localStorage.clear();
+			this.$router.push('/login');
+		}
+	}
 };
 </script>
 
@@ -45,6 +52,10 @@ nav ul {
 	justify-content: space-around;
 	align-items: center;
 	width: 35%;
+}
+
+.cursor-pointer{
+	cursor: pointer;
 }
 
 .text-decoration {

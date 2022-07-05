@@ -4,24 +4,52 @@
             <h1>CONNEXION</h1>
             <p>Pas encore membre ? <router-link to="/signup"> > Cliquez ici &lt; </router-link>
             </p>
-            <form>
+            <form @submit.prevent="submitLoginForm">
                 <div>
-                    <input type="text" name="email" placeholder="Adresse e-mail">
+                    <input type="email" name="email" v-model="email" placeholder="Adresse e-mail">
                 </div>
                 <br>
                 <div>
-                    <input type="password" name="password" placeholder="Mot de passe">
+                    <input type="password" name="password"  v-model="password" placeholder="Mot de passe">
                 </div>
                 <br>
-                <button type="submit" class="button">Se connecter</button>
+                <button class="button" type="submit">Se connecter</button>
             </form>
         </div>
     </div>
 </template>
 
 <script>
+
+import * as Vue from "vue";
+import axios from "axios";
+import VueAxios from "vue-axios";
+
+const app = Vue.createApp();
+app.use(VueAxios, axios);
+
 export default {
-    name: "login"
+    name: "login",
+	data () {
+		return {
+			email: "",
+			password: ""
+		}
+	},
+	methods: {
+		submitLoginForm() {
+			axios.post('http://127.0.0.1:3000/api/auth/login', {
+				email: this.email,
+				password: this.password,
+			}).then(response => {
+				console.log(response.data.token);
+				localStorage.setItem('token', response.data.token);
+				this.$router.push('/accueil')
+			}).catch(error => {
+				console.log(error);
+			})
+		}
+	}
 }
 </script>
 

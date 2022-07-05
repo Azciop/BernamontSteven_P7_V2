@@ -5,24 +5,24 @@
 			<p>
 				Déjà membre ?<router-link to="/login"> > Cliquez ici &lt;</router-link>
 			</p>
-			<form @submit="postData" method="post">
+			<form @submit.prevent="submitSignupForm">
 				<div>
-					<input type="text" name="email" placeholder="Adresse e-mail" v-model="posts.email" />
+					<input type="email" name="email" placeholder="Adresse e-mail" v-model="email" />
 				</div>
 				<br />
 				<div>
-					<input type="text" name="nom" placeholder="Nom" v-model="posts.lastname" />
+					<input type="text" name="nom" placeholder="Nom" v-model="lastname" />
 				</div>
 				<br />
 				<div>
-					<input type="text" name="prenom" placeholder="Prenom" v-model="posts.firstname" />
+					<input type="text" name="prenom" placeholder="Prenom" v-model="firstname" />
 				</div>
 				<br />
 				<div>
-					<input type="password" name="password" placeholder="Mot de passe" v-model="posts.password" />
+					<input type="password" name="password" placeholder="Mot de passe" v-model="password" />
 				</div>
 				<br />
-				<button type="submit" class="button">S'inscrire</button>
+				<button class="button" type="submit">S'inscrire</button>
 			</form>
 		</div>
 	</div>
@@ -40,42 +40,32 @@ export default {
 	name: "signup",
 	data() {
 		return {
-			posts: {
-				email: null,
-				lastname: null,
-				firstname: null,
-				password: null,
-			},
-		};
+			email: "",
+			lastname: "",
+			firstname: "",
+			password: "",
+		}
 	},
 	methods: {
-		postData(e) {
-			axios
-				.post(
-					"http://127.0.0.1:3000/api/auth/signup ",
-
-					{
-						email: "",
-						lastname: "",
-						firstname: "",
-						password: "",
-					}
-				)
-				.then(function (response) {
-					console.log(response);
-				})
-				.catch(function (error) {
-					console.log(error);
-				});
-			e.preventDefault();
-		},
-	},
+		submitSignupForm() {
+			axios.post('http://127.0.0.1:3000/api/auth/signup', {
+				email: this.email,
+				lastname: this.lastname,
+				firstname: this.firstname,
+				password: this.password,
+			}).then(response => {
+				console.log(response);
+				this.$router.push('/Login')
+				alert("account created");
+			}).catch(error => {
+				console.log(error);
+			})
+		}
+	}
 };
 </script>
 
 <style scoped>
-
-
 .template {
 	background: #ffd7d7;
 }
