@@ -9,7 +9,6 @@ const multer = require("../middleware/multer-config");
 
 // We make our routes to create a comment and to like a comment
 router.post("/", auth, multer, commentCtrl.createComment);
-router.post("/:id/like", auth, commentCtrl.rateComment);
 
 // We make our routes to get one or all the comments
 router.get("/:id", commentCtrl.readOneComment);

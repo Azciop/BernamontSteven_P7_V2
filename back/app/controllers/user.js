@@ -157,6 +157,14 @@ exports.updateUser = async (req, res, next) => {
 		// changing the  email
 		update.email = encryptEmail(req.body.email);
 	}
+	// Making the firstname change
+	if (req.body.firstname) {
+		update.firstname = req.body.firstname
+	}
+	// Making the lastname change
+	if (req.body.lastname) {
+		update.lastname = req.body.lastname
+	}
 	// using the findOneAndUpdate function to update the desired change
 	User.findOneAndUpdate({ _id: req.auth.userId }, update)
 		.then(user => {

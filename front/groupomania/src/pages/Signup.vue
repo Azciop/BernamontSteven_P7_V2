@@ -1,6 +1,5 @@
-<template>
-	<div id="app" class="template">
-		<div id="signup_form">
+<template>	
+		<div id="signup_form" class="template">
 			<h1>INSCRIPTION</h1>
 			<p>
 				Déjà membre ?<router-link to="/login"> > Cliquez ici &lt;</router-link>
@@ -25,7 +24,6 @@
 				<button class="button" type="submit">S'inscrire</button>
 			</form>
 		</div>
-	</div>
 </template>
 
 <script>

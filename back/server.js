@@ -46,7 +46,6 @@ app.use(function (req, res, next) {
 });
 	
 
-
 // importing db confing to allow our database to work
 const db = require("./config/db.config");
 

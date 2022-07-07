@@ -1,5 +1,4 @@
 <template>
-    <div id="app">
         <div id="signup_form" class="template">
             <h1>CONNEXION</h1>
             <p>Pas encore membre ? <router-link to="/signup"> > Cliquez ici &lt; </router-link>
@@ -16,7 +15,6 @@
                 <button class="button" type="submit">Se connecter</button>
             </form>
         </div>
-    </div>
 </template>
 
 <script>
@@ -24,6 +22,7 @@
 import * as Vue from "vue";
 import axios from "axios";
 import VueAxios from "vue-axios";
+
 
 const app = Vue.createApp();
 app.use(VueAxios, axios);
@@ -42,7 +41,7 @@ export default {
 				email: this.email,
 				password: this.password,
 			}).then(response => {
-				console.log(response.data.token);
+				console.log(response);
 				localStorage.setItem('token', response.data.token);
 				this.$router.push('/accueil')
 			}).catch(error => {
