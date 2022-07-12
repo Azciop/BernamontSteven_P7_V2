@@ -58,13 +58,17 @@ export default {
 }
 
 #signup_form {
-	display: flex;
-	flex-direction: column;
-	align-content: center;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	z-index: 99;
+	width: 100%;
+	max-width: 400px;
+    background-color: #ffd7d7;
+    border-radius: 20px;
 	text-align: center;
-	padding: 10px 0 20px 0;
-	margin-top: 10%;
-	margin-bottom: 10%;
+	padding: 20px 0 20px 0;
 }
 
 h1 {

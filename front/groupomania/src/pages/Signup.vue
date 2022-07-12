@@ -6,19 +6,19 @@
 			</p>
 			<form @submit.prevent="submitSignupForm">
 				<div>
-					<input type="email" name="email" placeholder="Adresse e-mail" v-model="email" />
+					<input type="email" name="email" placeholder="Adresse e-mail" v-model="userInfos.email" />
 				</div>
 				<br />
 				<div>
-					<input type="text" name="nom" placeholder="Nom" v-model="lastname" />
+					<input type="text" name="nom" placeholder="Nom" v-model="userInfos.lastname" />
 				</div>
 				<br />
 				<div>
-					<input type="text" name="prenom" placeholder="Prenom" v-model="firstname" />
+					<input type="text" name="prenom" placeholder="Prenom" v-model="userInfos.firstname" />
 				</div>
 				<br />
 				<div>
-					<input type="password" name="password" placeholder="Mot de passe" v-model="password" />
+					<input type="password" name="password" placeholder="Mot de passe" v-model="userInfos.password" />
 				</div>
 				<br />
 				<button class="button" type="submit">S'inscrire</button>
@@ -38,19 +38,21 @@ export default {
 	name: "signup",
 	data() {
 		return {
-			email: "",
-			lastname: "",
-			firstname: "",
-			password: "",
+			userInfos :{
+				email: "",
+				lastname: "",
+				firstname: "",
+				password: "",
+			}
 		}
 	},
 	methods: {
 		submitSignupForm() {
 			axios.post('http://127.0.0.1:3000/api/auth/signup', {
-				email: this.email,
-				lastname: this.lastname,
-				firstname: this.firstname,
-				password: this.password,
+				email: this.userInfos.email,
+				lastname: this.userInfos.lastname,
+				firstname: this.userInfos.firstname,
+				password: this.userInfos.password,
 			}).then(response => {
 				console.log(response);
 				this.$router.push('/Login')
@@ -64,20 +66,21 @@ export default {
 </script>
 
 <style scoped>
-.template {
-	background: #ffd7d7;
-}
+
 
 #signup_form {
-	display: flex;
-	flex-direction: column;
-	align-content: center;
+	 position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	z-index: 99;
+	width: 100%;
+	max-width: 400px;
+    background-color: #ffd7d7;
+    border-radius: 20px;
 	text-align: center;
-	padding: 10px 0 20px 0;
-	margin-top: 10%;
-	margin-bottom: 10%;
+	padding: 20px 0 20px 0;
 }
-
 h1 {
 	margin: 0;
 }
