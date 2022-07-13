@@ -4,7 +4,6 @@ import Signup from './pages/Signup.vue';
 import Accueil from './pages/Accueil.vue';
 import Account from './pages/Account.vue';
 import PageNotFound from './pages/pageNotFound.vue';
-import createPost from './pages/createPost.vue';
 
 
 const routes = [
@@ -27,10 +26,6 @@ const routes = [
     {
         path: '/signup',
         component: Signup,
-    },
-    {
-        path: '/createPost',
-        component: createPost,
     },
     {
         path: "/:catchAll(.*)",

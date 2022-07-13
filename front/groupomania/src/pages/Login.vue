@@ -1,4 +1,8 @@
 <template>
+	<div id="#app">
+		<div id="nav">
+			<img class="logo" src="../assets/icon-left-font-monochrome-black.png" />			
+		</div>
         <div id="signup_form" class="template">
             <h1>CONNEXION</h1>
             <p>Pas encore membre ? <router-link to="/signup"> > Cliquez ici &lt; </router-link>
@@ -15,6 +19,7 @@
                 <button class="button" type="submit">Se connecter</button>
             </form>
         </div>
+		</div>
 </template>
 
 <script>
@@ -22,6 +27,7 @@
 import * as Vue from "vue";
 import axios from "axios";
 import VueAxios from "vue-axios";
+import setAuthHeader from '../utils/setAuthHeader';
 
 
 const app = Vue.createApp();
@@ -43,9 +49,11 @@ export default {
 			}).then(response => {
 				console.log(response);
 				localStorage.setItem('token', response.data.token);
+				setAuthHeader(response.data.token);
 				this.$router.push('/accueil')
 			}).catch(error => {
 				console.log(error);
+				alert("Email ou mot de passe incorrect");
 			})
 		}
 	}
@@ -56,6 +64,15 @@ export default {
 .template {
 	background-color: #ffd7d7;
 }
+
+.logo {
+	 position: fixed;
+    top: 10%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+	width: 500px;
+}
+
 
 #signup_form {
 	position: fixed;
@@ -69,6 +86,7 @@ export default {
     border-radius: 20px;
 	text-align: center;
 	padding: 20px 0 20px 0;
+	margin: 0px;
 }
 
 h1 {

@@ -157,26 +157,19 @@ exports.ratePost = (req, res, next) => {
 
 // we make a function and a exports to creat a new post
 exports.createPost = (req, res, next) => {
-	// making a const to store new post values
-	const postObject = JSON.parse(req.body.post);
-	delete postObject._id;
-	// then we creat the new post using the cost we just created
+	const postObject = req.file
+		? {
+			...req.body,
+			imageUrl: `/images/${req.file.filename}`,
+		}
+		: { ...req.body };
 	const post = new Post({
-		...postObject,
-		// we also get the desired image
-		imageUrl: `/images/${req.file.filename}`,
+				...postObject
 	});
 	post
 		.save()
-		// then we push the new post and we send a message
-		.then(result =>
-			res
-				.status(201)
-				.json(
-					{ message: "New post saved !", data: result }
-				)
-		)
-		.catch(error => res.status(400).json({ error }));
+		.then(() => res.status(201).json({ message: "Post created !" }))
+		.catch((error) => res.status(400).json({ error }));
 };
 
 // we make a function to update a post
@@ -184,14 +177,16 @@ exports.updatePost = (req, res, next) => {
 	// Using the findOne method to find the post
 	Post.findOne({ _id: req.params.id })
 		.then(post => {
-			if (req.auth.userId !== post.userId) { return res
-				.status(403)
-				.json(
-					{ message: "Access denied. This post is not your own." },
-				) }
+			if (req.auth.userId !== post.userId) {
+				return res
+					.status(403)
+					.json(
+						{ message: "Access denied. This post is not your own." },
+					)
+			}
 			// we make a const to find the image we want to delete in case of a image change
 			const filename = post.imageUrl.split("/images/")[1];
-			if (req.file ) {
+			if (req.file) {
 				// we make a object that contains the new values and the new image
 				const postObject = {
 					...JSON.parse(req.body.post),

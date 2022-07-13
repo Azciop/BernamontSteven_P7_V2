@@ -9,10 +9,8 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 /* import specific icons */
-import { faCircleXmark } from '@fortawesome/free-solid-svg-icons'
-import { faFileImage } from '@fortawesome/free-solid-svg-icons'
-import { faPaperPlane } from '@fortawesome/free-solid-svg-icons'
-import { faThumbsUp } from '@fortawesome/free-solid-svg-icons'
+import { faCircleXmark, faFileImage, faPaperPlane, faThumbsUp } from '@fortawesome/free-solid-svg-icons'
+
 
 /* add icons to the library */
 library.add(faCircleXmark, faFileImage,faPaperPlane, faThumbsUp)

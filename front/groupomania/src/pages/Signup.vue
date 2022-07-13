@@ -1,4 +1,8 @@
 <template>	
+<div id="#app">
+		<div id="nav">
+			<img class="logo" src="../assets/icon-left-font-monochrome-black.png" />			
+		</div>
 		<div id="signup_form" class="template">
 			<h1>INSCRIPTION</h1>
 			<p>
@@ -23,6 +27,7 @@
 				<br />
 				<button class="button" type="submit">S'inscrire</button>
 			</form>
+		</div>
 		</div>
 </template>
 
@@ -56,9 +61,10 @@ export default {
 			}).then(response => {
 				console.log(response);
 				this.$router.push('/Login')
-				alert("account created");
+				alert("compte créé");
 			}).catch(error => {
 				console.log(error);
+				alert("e-mail déjà utilisé");
 			})
 		}
 	}
@@ -68,8 +74,17 @@ export default {
 <style scoped>
 
 
-#signup_form {
+.logo {
 	 position: fixed;
+    top: 10%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+	width: 500px;
+}
+
+
+#signup_form {
+	position: fixed;
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
@@ -80,6 +95,7 @@ export default {
     border-radius: 20px;
 	text-align: center;
 	padding: 20px 0 20px 0;
+	margin-top: 30px;
 }
 h1 {
 	margin: 0;

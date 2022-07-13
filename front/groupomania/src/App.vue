@@ -10,7 +10,6 @@
   import login from './pages/Login.vue';
   import accueil from './pages/Accueil.vue';
   import account from './pages/Account.vue';
-  import createPost from './pages/createPost.vue';
   
 export default {
   name: 'App',
@@ -19,7 +18,6 @@ export default {
     login,
     accueil,
     account,
-    createPost,
   }
 }
 </script>
