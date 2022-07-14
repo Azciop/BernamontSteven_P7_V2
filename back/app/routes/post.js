@@ -15,9 +15,6 @@ router.post("/:id/like", auth, postCtrl.ratePost);
 router.get("/:id", postCtrl.readOnePost);
 router.get("/", postCtrl.readAllPosts);
 
-// We make our route to update a post
-router.put("/:id", auth, multer, postCtrl.updatePost);
-
 // We make our route to delete a post
 router.delete("/:id", auth, postCtrl.deletePost);
 

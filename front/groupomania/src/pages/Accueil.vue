@@ -13,7 +13,8 @@
 			</ul>
 		</div>
 		<div id="create-post">
-			<button class="create-post_button text-left" @click="showModal = true">Quoi de neuf, {{ user.firstname }} ?</button>
+			<button class="create-post_button text-left" @click="showModal = true">Quoi de neuf, {{ user.firstname }}
+				?</button>
 			<transition name="fade" appear>
 				<div class="modal-overlay" v-if="showModal" @click="showModal = false">
 
@@ -27,7 +28,7 @@
 							<font-awesome-icon class="close_create_post" icon="fa-solid fa-circle-xmark" />
 						</div>
 					</span>
-					<form> 
+					<form>
 						<div>
 							<input class="textPost" name="createPost" placeholder="Quoi de neuf ?" v-model="content" />
 						</div>
@@ -40,11 +41,11 @@
 			</transition>
 		</div>
 		<div class="feed">
-			<div class="post" :key="index" v-for="(post, index) in post">
-				<button title="Supprimer ce post !" class="delete-post-button">
+			<div class="post" :key="post._id" v-for="post in post">
+				<button  v-on:click.prevent="deletePost(post._id)" title="Supprimer ce post !" class="delete-post-button">
 					<font-awesome-icon class="delete-post-icon" icon="fa-solid fa-circle-xmark" />
 				</button>
-				<p class="authorName">{{ post.userId }}  firstname </p>
+				<p class="authorName">{{ post._id }} {{ post.firstname }}</p>
 
 				<p class="authorText"> {{ post.content }} </p>
 				<div>
@@ -87,6 +88,7 @@ export default {
 			},
 			selectedFile: null,
 			content: "",
+			
 		};
 	},
 	methods: {
@@ -94,24 +96,21 @@ export default {
 			localStorage.clear();
 			this.$router.push('/login');
 		},
-		deletePost () {
-
+		deletePost(id) {
+			axios
+				.delete("http://127.0.0.1:3000/api/post/" +id, {
+				headers: {
+					Authorization: "Bearer " + localStorage.getItem("token"),
+				}
+				})
+				.then(() => {
+					this.getAllPost();
+				})
+				.catch((error) => console.log("error", error));
 		},
-		onFileSelected(event) {
-			this.selectedFile = event.target.files[0]
-		},
-		publishPost() {
-			const fd = event.target.files[0]
-			fd.append('image', this.selectedFile, this.selectedFile.name)
-			axios.post('http://127.0.0.1:3000/api/post', {
-					headers: {
-						Authorization: "Bearer " + localStorage.getItem("token"),
-					},
-			})
-			.then(response => {
-				console.log(response)
-			})
-			.catch((error) => console.log(error));
+		logOut() {
+			localStorage.clear();
+			this.$router.push('/login');
 		},
 		getUser() {
 			axios
@@ -121,24 +120,26 @@ export default {
 					},
 				})
 				.then((response) => {
-					console.log("response", response);
+					console.log("getUser", response);
 					this.user = response.data;
 				})
 				.catch((error) => console.log(error));
 		},
+		getAllPost()
+		{axios
+			.get('http://127.0.0.1:3000/api/post')
+			.then((response) => {	
+				console.log("getPosts ", response.data);
+				this.post = response.data;
+			}).catch(error => {
+				console.log(error);
+			})},
 	},
 	mounted() {
 		this.getUser();
-		axios
-			.get('http://127.0.0.1:3000/api/post')
-			.then((response) => {
-				console.log("response", response);
-					this.post = response.data;
-			}).catch(error => {
-				console.log(error);
-			})
+		this.getAllPost();
 	},
-	
+
 }
 
 </script>

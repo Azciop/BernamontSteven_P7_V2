@@ -28,23 +28,23 @@
 								icon="fa-solid fa-circle-xmark" />
 							<form class="modify-user-info">
 								<div>
-									<input type="text" placeholder="Changer de prénom" />
+									<input type="text" v-model="user.firstname" placeholder="Changer de prénom" />
 								</div>
 								<br />
 								<div>
-									<input type="text" placeholder="Changer de nom de famille" />
+									<input type="text" v-model="user.lastname" placeholder="Changer de nom de famille" />
 								</div>
 								<br />
 								<div>
-									<input type="email" placeholder="Changer d'adresse mail" />
+									<input type="email" v-model="user.email" placeholder="Changer d'adresse mail" />
 								</div>
 								<br />
 								<div>
-									<input type="text" placeholder="Changer de mot de passe" />
+									<input v-model="user.password" type="text" placeholder="Changer de mot de passe" />
 								</div>
 								<br />
 							</form>
-							<button class="validate-modify-button">Modifier mes informations</button>
+							<button v-on:click="updateUser" class="validate-modify-button">Modifier mes informations</button>
 						</div>
 					</transition>
 				</div>
@@ -74,10 +74,9 @@ export default {
 			user: {
 				email: "",
 				lastname: "",
-				firstname: ""
+				firstname: "",
+				password: "",
 			},
-
-
 		};
 	},
 	mounted() {
@@ -111,6 +110,29 @@ export default {
 			})
 			.catch((error) => console.log(error));
 		},
+
+updateUser() {
+      const formData = new FormData();
+      formData.append("firstname", this.user.firstname);
+      formData.append("lastname", this.user.lastname);
+      formData.append("email", this.user.email);
+      formData.append("password", this.user.password);
+      axios
+        .put("http://127.0.0.1:3000/api/auth/", formData,
+		{
+				headers: {
+						Authorization: "Bearer " + localStorage.getItem("token"),
+					},
+			})
+        .then(() => {
+			
+          this.user.firstname = "";
+          this.user.lastname = "";
+          this.user.email = "";
+          this.user.password = "";
+        })
+        .catch((error) => console.log(error));
+    },
 		logOut() {
 			localStorage.clear();
 			this.$router.push('/login');

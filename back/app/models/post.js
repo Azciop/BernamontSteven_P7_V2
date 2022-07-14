@@ -10,6 +10,8 @@ const postSchema = mongoose.Schema({
 	dislikes: { type: Number, default: 0 },
 	usersLiked: [{ type: String, ref: "User" }],
 	usersDisliked: [{ type: String, ref: "User" }],
+	firstname: {type: String, required: true, trim: true },
+    lastname: {type: String, required: true, trim: true },
 });
 
 // then we export this model

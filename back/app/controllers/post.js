@@ -6,7 +6,7 @@ const fs = require("fs");
 
 // Importing the express modules
 var express = require("express");
-var app = express();
+
 
 // making a function and an export to find a specific post
 exports.readOnePost = (req, res, next) => {
@@ -172,75 +172,16 @@ exports.createPost = (req, res, next) => {
 		.catch((error) => res.status(400).json({ error }));
 };
 
-// we make a function to update a post
-exports.updatePost = (req, res, next) => {
-	// Using the findOne method to find the post
-	Post.findOne({ _id: req.params.id })
-		.then(post => {
-			if (req.auth.userId !== post.userId) {
-				return res
-					.status(403)
-					.json(
-						{ message: "Access denied. This post is not your own." },
-					)
-			}
-			// we make a const to find the image we want to delete in case of a image change
-			const filename = post.imageUrl.split("/images/")[1];
-			if (req.file) {
-				// we make a object that contains the new values and the new image
-				const postObject = {
-					...JSON.parse(req.body.post),
-					imageUrl: `/images/${req.file.filename}`,
-				};
-				// We use the unlink method to delete the old image
-				fs.unlink(`images/${filename}`, () => {
-					// using the updateOne function to update the values if the image has been modified
-					Post.updateOne(
-						{ _id: req.params.id },
-						{ ...postObject, _id: req.params.id }
-					)
-						// then we send the message
-						.then(post =>
-							res
-								.status(200)
-								.json(
-									{ message: "Your post has been modified", data: post }
-								)
-						)
-						.catch(error => res.status(400).json({ error }));
-				});
-			} else {
-				// else, we just update the new values without changing the image
-				Post.updateOne(
-					{ _id: req.params.id },
-					{ ...req.body, _id: req.params.id }
-				)
-					// then, we send the message
-					.then(post =>
-						res
-							.status(200)
-							.json(
-								{ message: "Your post has been modified", data: post }
-							)
-					)
-					.catch(error => res.status(400).json({ error }));
-			}
-		})
-		.catch(error => res.status(500).json({ error }));
-
-};
-
-// we make a function to delete a post
 exports.deletePost = (req, res, next) => {
-	// uding a findOneAndDelete to delete a post
-	Post.findOneAndDelete({ _id: req.params.id }).then(post => {
-		// making a const to get the image we want to delete
-		const filename = post.imageUrl.split("/images/")[1];
-		// using the unlink method to delete the image that is in the const
-		fs.unlink(`images/${filename}`, () => {
-			// then we send the image
-			res.status(200).json({ message: "Your post has been deleted" });
-		});
-	});
+    Post.findOne({ _id: req.params.id })
+    .then(post=> {
+      const filename = post.imageUrl.split('/images/')[1];
+      fs.unlink(`images/${filename}`, () => {//supprimer fichier
+        Post.deleteOne({ _id: req.params.id })
+          .then(() => res.status(200).json({ message: 'Post supprimé !'}))
+          .catch(error => res.status(400).json({ error }));
+      });
+    })
+    .catch(error => res.status(500).json({ error }));
 };
 
