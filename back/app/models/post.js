@@ -12,7 +12,20 @@ const postSchema = mongoose.Schema({
 	usersDisliked: [{ type: String, ref: "User" }],
 	firstname: {type: String, required: true, trim: true },
     lastname: {type: String, required: true, trim: true },
+	created_at: { type: Date},
+	updated_at    : { type: Date }
+
 });
 
+postSchema.pre('save', function(next){
+	now = new Date();
+	this.updated_at = now;
+	if ( !this.created_at ) {
+	  this.created_at = now;
+	}
+	next();
+  });
+ 
+  
 // then we export this model
 module.exports = mongoose.model("Post", postSchema);

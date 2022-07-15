@@ -28,24 +28,25 @@
 							<font-awesome-icon class="close_create_post" icon="fa-solid fa-circle-xmark" />
 						</div>
 					</span>
-					<form>
+					<form @submit.prevent="submitCreatePost" enctype="multipart/form-data">
 						<div>
 							<input class="textPost" name="createPost" placeholder="Quoi de neuf ?" v-model="content" />
 						</div>
 						<div class="center-sendbutton">
-							<input type="file" @change="onFileSelected" class="add-image" ref="fileInput" />
-							<button @click="publishPost" type="submit" class="publishPost">Publier</button>
+							<input type="file" v-on:change="selectFile" ref="file" />
+							<button type="submit" class="publishPost">Publier</button>
 						</div>
 					</form>
 				</div>
 			</transition>
 		</div>
-		<div class="feed">
+		<div class="feed reverseoPosts ">
 			<div class="post" :key="post._id" v-for="post in post">
-				<button  v-on:click.prevent="deletePost(post._id)" title="Supprimer ce post !" class="delete-post-button">
+				<button v-on:click.prevent="deletePost(post._id)" title="Supprimer ce post !"
+					class="delete-post-button">
 					<font-awesome-icon class="delete-post-icon" icon="fa-solid fa-circle-xmark" />
 				</button>
-				<p class="authorName">{{ post._id }} {{ post.firstname }}</p>
+				<p class="authorName">{{ post.lastname }} {{ post.firstname }}</p>
 
 				<p class="authorText"> {{ post.content }} </p>
 				<div>
@@ -56,6 +57,12 @@
 						<p class="likes">{{ post.likes }} like !</p>
 						<button type="submit" title="Aimer ce post !" class="button">
 							<font-awesome-icon icon="fa-solid fa-thumbs-up" /> Like !
+						</button>
+					</div>
+					<div class="like-setup">
+						<p class="likes">{{ post.dislikes }} dislike !</p>
+						<button type="submit" title="Ne pas aimer ce post !" class="button">
+							<font-awesome-icon icon="fa-solid fa-thumbs-down" /> Dislike !
 						</button>
 					</div>
 				</div>
@@ -77,31 +84,55 @@ import VueAxios from "vue-axios";
 const app = Vue.createApp();
 app.use(VueAxios, axios);
 
+
+
 export default {
 	name: "accueil",
 	data() {
 		return {
+			file: "",
+			content: "",
 			showModal: false,
 			post: null,
 			user: {
 				firstname: "",
+				lastname: "",
 			},
-			selectedFile: null,
-			content: "",
-			
+
 		};
 	},
 	methods: {
+		selectFile() {
+			this.file = this.$refs.file.files[0];
+		},
+		async submitCreatePost() {
+			const formData = new FormData();
+			formData.append('file', this.file);
+			formData.append('content', this.content);
+			formData.append('firstname', this.user.firstname);
+			formData.append('lastname', this.user.lastname);
+			await axios.post("http://127.0.0.1:3000/api/post",
+				formData,
+				{
+					headers: {
+						Authorization: "Bearer " + localStorage.getItem("token"),
+					}
+				}).then(
+					this.content = "",
+					this.file = "",
+				).then((response) => response.status >= 200 || response.status <= 201 ? location.reload(true) : console.log(response.statusText))
+				.catch(error => console.log(error));
+		},
 		logOut() {
 			localStorage.clear();
 			this.$router.push('/login');
 		},
 		deletePost(id) {
 			axios
-				.delete("http://127.0.0.1:3000/api/post/" +id, {
-				headers: {
-					Authorization: "Bearer " + localStorage.getItem("token"),
-				}
+				.delete("http://127.0.0.1:3000/api/post/" + id, {
+					headers: {
+						Authorization: "Bearer " + localStorage.getItem("token"),
+					}
 				})
 				.then(() => {
 					this.getAllPost();
@@ -125,22 +156,23 @@ export default {
 				})
 				.catch((error) => console.log(error));
 		},
-		getAllPost()
-		{axios
-			.get('http://127.0.0.1:3000/api/post')
-			.then((response) => {	
-				console.log("getPosts ", response.data);
-				this.post = response.data;
-			}).catch(error => {
-				console.log(error);
-			})},
+		getAllPost() {
+			axios
+				.get('http://127.0.0.1:3000/api/post')
+				.then((response) => {
+					console.log("getPosts ", response.data);
+					this.post = response.data;
+				}).catch(error => {
+					console.log(error);
+				})
+		},
 	},
 	mounted() {
 		this.getUser();
 		this.getAllPost();
 	},
-
 }
+
 
 </script>
 
@@ -323,7 +355,7 @@ export default {
 
 .post {
 	position: relative;
-	width: 50vw;
+	width: 575px;
 	border-radius: 30px;
 	background-color: #FFD7D7;
 	margin-bottom: 20px;
@@ -353,19 +385,19 @@ export default {
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
-	align-items: center;
+	align-items: left;
 	border-bottom: black;
+	font-size: 15px;
 }
 
 .like-setup {
 	display: flex;
-	justify-content: space-around;
-	align-items: center;
+	flex-direction: row;
 }
 
 .likes {
 	text-align: left !important;
-	margin: 0 20px 20px 20px;
+	margin: 0 20px 0px 20px;
 	font-weight: bold;
 }
 
@@ -412,5 +444,10 @@ export default {
 
 .delete-post-icon:hover {
 	filter: brightness(85%);
+}
+
+.reverseoPosts {
+	display: flex;
+	flex-direction: column-reverse;
 }
 </style>

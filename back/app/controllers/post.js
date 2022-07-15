@@ -1,6 +1,8 @@
 // getting the post model's file
 const Post = require("../models/post");
 
+const User = require ("../models/user")
+
 // importing the filesystem module
 const fs = require("fs");
 

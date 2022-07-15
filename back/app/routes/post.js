@@ -9,7 +9,7 @@ const multer = require("../middleware/multer-config");
 
 // We make our routes to create a post and to like a post
 router.post("/", auth, multer, postCtrl.createPost);
-router.post("/:id/like", auth, postCtrl.ratePost);
+router.post("/like/:id", auth, postCtrl.ratePost);
 
 // We make our routes to get one or all the posts
 router.get("/:id", postCtrl.readOnePost);
