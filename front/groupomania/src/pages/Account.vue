@@ -273,4 +273,27 @@ input {
 .close_modify-infos:hover {
 	filter: brightness(85%);
 }
+
+@media all and (max-width: 650px) {
+	#app {
+		max-width: 650px;
+	}
+	#nav {
+		flex-direction: column;
+    	align-items: flex-start;
+	}
+	.logo {
+		margin-left: auto;
+		margin-right: auto;
+		margin-top:16px;
+		padding: 0;
+		left: 0;
+	}
+	#ul-nav {
+		display: flex;
+		justify-content: space-around;
+		width: 100%;
+		padding: 0;
+	}
+}
 </style>

@@ -41,7 +41,7 @@
 			</transition>
 		</div>
 		<div class="feed reverseoPosts ">
-			<div class="post" :key="post._id" v-for="post in post">
+			<div class="post" :key="post._id" v-for="post in posts">
 				<button v-on:click.prevent="deletePost(post._id)" title="Supprimer ce post !"
 					class="delete-post-button">
 					<font-awesome-icon class="delete-post-icon" icon="fa-solid fa-circle-xmark" />
@@ -93,7 +93,7 @@ export default {
 			file: "",
 			content: "",
 			showModal: false,
-			post: null,
+			posts: null,
 			user: {
 				firstname: "",
 				lastname: "",
@@ -161,7 +161,7 @@ export default {
 				.get('http://127.0.0.1:3000/api/post')
 				.then((response) => {
 					console.log("getPosts ", response.data);
-					this.post = response.data;
+					this.posts = response.data;
 				}).catch(error => {
 					console.log(error);
 				})
@@ -449,5 +449,32 @@ export default {
 .reverseoPosts {
 	display: flex;
 	flex-direction: column-reverse;
+}
+
+@media all and (max-width: 650px) {
+	#app {
+		max-width: 650px;
+	}
+	#nav {
+		flex-direction: column;
+    align-items: flex-start;
+	
+	}
+	.logo {
+		margin-left: auto;
+		margin-right: auto;
+		margin-top:16px;
+		padding: 0;
+		left: 0;
+	}
+	#ul-nav {
+		display: flex;
+		justify-content: space-around;
+		width: 100%;
+		padding: 0;
+	}
+	.create-post_button {
+		width: 575px;
+	}
 }
 </style>

@@ -4,12 +4,17 @@ import Signup from './pages/Signup.vue';
 import Accueil from './pages/Accueil.vue';
 import Account from './pages/Account.vue';
 import PageNotFound from './pages/pageNotFound.vue';
+import adminDashboard from './pages/adminDashboard.vue';
 
 
 const routes = [
     {
         path: '/accueil',
         component: Accueil,
+    },
+    {
+        path: '/adminDashboard',
+        component: adminDashboard,
     },
     {
         path: '/',

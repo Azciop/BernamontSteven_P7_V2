@@ -12,6 +12,7 @@ router.post("/login", userCtrl.login);
 
 // we make our routes to read user
 router.get("/read", auth, userCtrl.readUser);
+router.get("/readAllUsers",  userCtrl.readAllUsers)
 
 // we make our route tu update user's info
 router.put("/", auth, userCtrl.updateUser);

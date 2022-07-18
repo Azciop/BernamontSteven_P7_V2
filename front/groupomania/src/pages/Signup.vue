@@ -147,4 +147,11 @@ input {
 	box-shadow: 3px 3px 20px #aaa;
 	margin: 0;
 }
+
+@media all and (max-width: 650px) {
+	#signup_form {
+		max-width: 650px;
+		border-radius: 0;
+	}
+}
 </style>

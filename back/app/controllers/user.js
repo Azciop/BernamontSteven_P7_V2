@@ -138,6 +138,21 @@ exports.readUser = (req, res, next) => {
 		});
 };
 
+exports.readAllUsers = (req, res, next) => {
+	// using a find function to find every posts available
+	User.find()
+		.then(users => {
+			// using a .map to make an array that includes every posts
+			users = users.map(user => {
+				// pushing every posts and their image
+				return user;
+			});
+			res.status(200).json(users);
+		})
+		.catch(error => res.status(400).json({ error }));
+};
+
+
 // update user infos
 exports.updateUser = async (req, res, next) => {
 	// making an empty object to store future infos
