@@ -125,7 +125,6 @@ updateUser() {
 					},
 			})
         .then(() => {
-			
           this.user.firstname = "";
           this.user.lastname = "";
           this.user.email = "";

@@ -24,6 +24,7 @@
   <td>userId</td>
   <td>FirstName</td>
   <td>LastName</td>
+  <td>isAdmin</td>
   <td>createdAt</td>
   <td>modifiedAt</td>
   </tr>
@@ -31,6 +32,7 @@
   <td>{{user._id}}</td>
   <td>{{user.firstname}}</td>
   <td>{{user.lastname}}</td>
+  <td>{{user.isAdmin}}</td>
   <td>{{user.created_at}}</td>
   <td>{{user.updated_at}}</td>
   </tr>

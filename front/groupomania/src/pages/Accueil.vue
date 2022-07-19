@@ -76,8 +76,8 @@
 				<p class="authorName">{{ post.lastname }} {{ post.firstname }}</p>
 
 				<p class="authorText"> {{ post.content }} </p>
-				<div>
-					<img class="postImg" :src="post.imageUrl" />
+				<div >
+					<img class="postImg" v-if=" post.imageUrl != ('http://127.0.0.1:3000undefined') " :src="post.imageUrl" />
 				</div>
 				<div class="like-section">
 					<div class="like-setup">
@@ -135,10 +135,10 @@ export default {
 		},
 		async submitCreatePost() {
 			const formData = new FormData();
-			formData.append('file', this.file);
+			formData.append('image', this.file);
 			formData.append('content', this.content);
-			formData.append('firstname', this.user.firstname);
-			formData.append('lastname', this.user.lastname);
+			// formData.append('firstname', this.user.firstname);
+			// formData.append('lastname', this.user.lastname);
 			await axios.post("http://127.0.0.1:3000/api/post",
 				formData,
 				{
@@ -146,6 +146,7 @@ export default {
 						Authorization: "Bearer " + localStorage.getItem("token"),
 					}
 				}).then(
+					console.log(formData),
 					this.content = "",
 					this.file = "",
 				).then((response) => response.status >= 200 || response.status <= 201 ? location.reload(true) : console.log(response.statusText))
