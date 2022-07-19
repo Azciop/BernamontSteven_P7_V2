@@ -24,15 +24,15 @@
   <td>userId</td>
   <td>FirstName</td>
   <td>LastName</td>
-  <td>ModifyInfos</td>
-  <td>Delete</td>
+  <td>createdAt</td>
+  <td>modifiedAt</td>
   </tr>
   <tr :key="user.userId" v-for="user in users">
   <td>{{user._id}}</td>
   <td>{{user.firstname}}</td>
   <td>{{user.lastname}}</td>
-  <td><button type="button" class="btn">Modifier Infos</button></td>
-  <td><button type="button" class="btn">Supprimer</button></td>
+  <td>{{user.created_at}}</td>
+  <td>{{user.updated_at}}</td>
   </tr>
 </table>
     </div>
@@ -56,6 +56,8 @@ export default {
 				_id: "",
 				lastname: "",
 				firstname: "",
+				created_at: "",
+				updated_at: "",
 			},
         };
     },

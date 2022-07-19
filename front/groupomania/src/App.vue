@@ -11,6 +11,7 @@
   import accueil from './pages/Accueil.vue';
   import account from './pages/Account.vue';
   import adminDashboard from './pages/adminDashboard.vue';
+
   
 export default {
   name: 'App',
@@ -20,6 +21,7 @@ export default {
     accueil,
     account,
     adminDashboard,
+   
   }
 }
 </script>

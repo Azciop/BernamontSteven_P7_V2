@@ -33,7 +33,7 @@
 							<input class="textPost" name="createPost" placeholder="Quoi de neuf ?" v-model="content" />
 						</div>
 						<div class="center-sendbutton">
-							<input type="file" v-on:change="selectFile" ref="file" />
+							<input type="file" class="publishPost" v-on:change="selectFile" ref="file" />
 							<button type="submit" class="publishPost">Publier</button>
 						</div>
 					</form>
@@ -42,8 +42,35 @@
 		</div>
 		<div class="feed reverseoPosts ">
 			<div class="post" :key="post._id" v-for="post in posts">
+        
+			<button @click="showModifyPost = true" class="button button-modify-post">Modifier</button>
+            <transition name="fade" appear>
+				<div class="modal-overlay" v-if="showModifyPost" @click="showModifyPost = false">
+
+				</div>
+			</transition>
+            <transition name="slide" appear>
+				<div class="modifiyPostModal" v-if="showModifyPost">
+					<span>
+						<h2 class="center-text">Modifier votre publication</h2>
+						<div class="close-post_button" @click="showModifyPost = false">
+							<font-awesome-icon class="close_create_post" icon="fa-solid fa-circle-xmark" />
+						</div>
+					</span>
+					<form @submit.prevent="submitCreatePost" enctype="multipart/form-data">
+						<div>
+							<input class="textPost" name="createPost" placeholder="Quoi de neuf ?" v-model="content" />
+						</div>
+						<div class="center-sendbutton">
+							<input type="file" class="publishPost" v-on:change="selectFile" ref="file" />
+							<button type="submit" class="publishPost">Modifier</button>
+						</div>
+					</form>
+				</div>
+			</transition>
 				<button v-on:click.prevent="deletePost(post._id)" title="Supprimer ce post !"
 					class="delete-post-button">
+					
 					<font-awesome-icon class="delete-post-icon" icon="fa-solid fa-circle-xmark" />
 				</button>
 				<p class="authorName">{{ post.lastname }} {{ post.firstname }}</p>
@@ -93,6 +120,7 @@ export default {
 			file: "",
 			content: "",
 			showModal: false,
+			showModifyPost: false,
 			posts: null,
 			user: {
 				firstname: "",
@@ -353,6 +381,17 @@ export default {
 	align-items: center;
 }
 
+.modifiyPostModal{
+    position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	z-index: 99;
+	width: 100%;
+	max-width: 400px;
+	background-color: #4E5166;
+	border-radius: 20px;
+}
 .post {
 	position: relative;
 	width: 575px;
@@ -444,6 +483,20 @@ export default {
 
 .delete-post-icon:hover {
 	filter: brightness(85%);
+}
+
+.button-modify-post {
+	position: absolute;
+	right: 60px;
+	top: 15px;
+	background-color: transparent;
+	background-repeat: no-repeat;
+	border: none;
+	cursor: pointer;
+	overflow: hidden;
+	outline: none;
+	margin: 0;
+	font-size: 12px;
 }
 
 .reverseoPosts {
