@@ -26,25 +26,32 @@
 						<div class="modal" v-if="showModal">
 							<font-awesome-icon class="close_modify-infos" @click="showModal = false"
 								icon="fa-solid fa-circle-xmark" />
-							<form class="modify-user-info">
+							<form class="modify-user-info" @submit.prevent="updateUser" >
 								<div>
+									<p>Changer de prénom</p>
 									<input type="text" v-model="user.firstname" placeholder="Changer de prénom" />
 								</div>
-								<br />
+
 								<div>
-									<input type="text" v-model="user.lastname" placeholder="Changer de nom de famille" />
+									<p>Changer de nom de famille</p>
+									<input type="text" v-model="user.lastname"
+										placeholder="Changer de nom de famille" />
 								</div>
-								<br />
+
 								<div>
+									<p>Changer d'adresse mail</p>
 									<input type="email" v-model="user.email" placeholder="Changer d'adresse mail" />
 								</div>
-								<br />
+
 								<div>
-									<input v-model="user.password" type="text" placeholder="Changer de mot de passe" />
+									<p>Changer de mot de passe</p>
+									<input v-model="user.password" type="password"
+										placeholder="Changer de mot de passe" />
 								</div>
 								<br />
+							<button v-on:click="updateUser" class="validate-modify-button">Modifier mes
+								informations</button>
 							</form>
-							<button v-on:click="updateUser" class="validate-modify-button">Modifier mes informations</button>
 						</div>
 					</transition>
 				</div>
@@ -72,7 +79,7 @@ export default {
 		return {
 			showModal: false,
 			user: {
-				email: "",
+				email: null,
 				lastname: "",
 				firstname: "",
 				password: "",
@@ -98,40 +105,42 @@ export default {
 		},
 		deleteAccount() {
 			axios
-			.delete("http://127.0.0.1:3000/api/auth/", {
-				headers: {
+				.delete("http://127.0.0.1:3000/api/auth/", {
+					headers: {
 						Authorization: "Bearer " + localStorage.getItem("token"),
 					},
-			})
-			.then(() => {
-				this.getUser();
-				localStorage.clear();
-			this.$router.push('/login');
-			})
-			.catch((error) => console.log(error));
+				})
+				.then(() => {
+					this.getUser();
+					localStorage.clear();
+					this.$router.push('/login');
+				})
+				.catch((error) => console.log(error));
 		},
-
-updateUser() {
-      const formData = new FormData();
-      formData.append("firstname", this.user.firstname);
-      formData.append("lastname", this.user.lastname);
-      formData.append("email", this.user.email);
-      formData.append("password", this.user.password);
-      axios
-        .put("http://127.0.0.1:3000/api/auth/", formData,
-		{
-				headers: {
-						Authorization: "Bearer " + localStorage.getItem("token"),
-					},
-			})
-        .then(() => {
-          this.user.firstname = "";
-          this.user.lastname = "";
-          this.user.email = "";
-          this.user.password = "";
-        })
-        .catch((error) => console.log(error));
-    },
+		updateUser() {
+			const formData = new FormData();
+			formData.append("firstname", this.user.firstname);
+			formData.append("lastname", this.user.lastname);
+			formData.append("email", this.user.email);
+			formData.append("password", this.user.password);
+			// formData.append('_method', 'put');
+			axios
+				.put("http://127.0.0.1:3000/api/auth/", formData,
+					{
+						headers: {
+							Authorization: "Bearer " + localStorage.getItem("token"),
+							'Content-Type': 'multipart/form-data'
+						},
+					})
+				.then((formData) => {
+					console.log(formData)
+					this.user.firstname = "";
+					this.user.lastname = "";
+					this.user.email = "";
+					this.user.password = "";
+				})
+				.catch((error) => console.log(error));
+		},
 		logOut() {
 			localStorage.clear();
 			this.$router.push('/login');
@@ -166,7 +175,7 @@ updateUser() {
 	color: #FD2D01;
 }
 
-.cursor-pointer{
+.cursor-pointer {
 	cursor: pointer;
 }
 
@@ -277,17 +286,20 @@ input {
 	#app {
 		max-width: 650px;
 	}
+
 	#nav {
 		flex-direction: column;
-    	align-items: flex-start;
+		align-items: flex-start;
 	}
+
 	.logo {
 		margin-left: auto;
 		margin-right: auto;
-		margin-top:16px;
+		margin-top: 16px;
 		padding: 0;
 		left: 0;
 	}
+
 	#ul-nav {
 		display: flex;
 		justify-content: space-around;

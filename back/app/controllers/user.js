@@ -16,34 +16,7 @@ const CryptoJS = require("crypto-js");
 
 // Importing express
 var express = require("express");
-var app = express();
 
-// Making a function to encrypt the email
-function encryptEmail(email) {
-	return CryptoJS.AES.encrypt(
-		email,
-		CryptoJS.enc.Base64.parse(process.env.PASSPHRASE),
-		{
-			iv: CryptoJS.enc.Base64.parse(process.env.IV),
-			mode: CryptoJS.mode.ECB,
-			padding: CryptoJS.pad.Pkcs7,
-		}
-	).toString();
-}
-
-// Making a function to decrypt the email
-function decryptEmail(email) {
-	var bytes = CryptoJS.AES.decrypt(
-		email,
-		CryptoJS.enc.Base64.parse(process.env.PASSPHRASE),
-		{
-			iv: CryptoJS.enc.Base64.parse(process.env.IV),
-			mode: CryptoJS.mode.ECB,
-			padding: CryptoJS.pad.Pkcs7,
-		}
-	);
-	return bytes.toString(CryptoJS.enc.Utf8);
-}
 
 function emailValidator(email) {
 	const reg =
@@ -61,11 +34,11 @@ exports.signup = (req, res, next) => {
 		.hash(req.body.password, 10)
 		.then(hash => {
 			// we get the encrypted email and we creat the user object
-			const emailEncrypted = encryptEmail(req.body.email);
+			// const emailEncrypted = encryptEmail(req.body.email);
 			const user = new User({
 				firstname: req.body.firstname,
 				lastname: req.body.lastname,
-				email: emailEncrypted,
+				email: req.body.email,
 				password: hash,
 			});
 			user
@@ -87,9 +60,9 @@ exports.signup = (req, res, next) => {
 // making the login function
 exports.login = (req, res, next) => {
 	// we get the encrypted email
-	const emailCryptoJS = encryptEmail(req.body.email);
+	// const emailCryptoJS = encryptEmail(req.body.email);
 	// using findOne to find the user
-	User.findOne({ email: emailCryptoJS })
+	User.findOne({ email: req.body.email })
 		.then(user => {
 			if (!user) {
 				return res.status(401).json({ error: " User not found !" });
@@ -105,6 +78,8 @@ exports.login = (req, res, next) => {
 						{
 							// if passwords matches, creat random secret token for a duration of 24h, and log in
 							userId: user._id,
+							firstname: user.firstname,
+							lastname: user.lastname,
 							token: jwt.sign({ userId: user._id }, "RANDOM_TOKEN_SECRET", {
 								expiresIn: "24h",
 							}),
@@ -129,7 +104,7 @@ exports.readUser = (req, res, next) => {
 			if (!user) {
 				return res.status(404).json({ error: "User not found!" });
 			}
-			user.email = decryptEmail(user.email);
+			user.password = req.body.password;
 			// send user infos as json
 			res.status(200).json(user);
 		})
@@ -170,7 +145,7 @@ exports.updateUser = async (req, res, next) => {
 			return res.status(400).json({ error: "invalid email" });
 		}
 		// changing the  email
-		update.email = encryptEmail(req.body.email);
+		update.email = (req.body.email);
 	}
 	// Making the firstname change
 	if (req.body.firstname) {

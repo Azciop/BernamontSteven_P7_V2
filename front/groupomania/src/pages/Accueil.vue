@@ -137,8 +137,9 @@ export default {
 			const formData = new FormData();
 			formData.append('image', this.file);
 			formData.append('content', this.content);
-			// formData.append('firstname', this.user.firstname);
-			// formData.append('lastname', this.user.lastname);
+			formData.append('firstname', localStorage.getItem("firstname"));
+			formData.append('lastname', localStorage.getItem("lastname"));
+			formData.append('userId', localStorage.getItem("userId"));
 			await axios.post("http://127.0.0.1:3000/api/post",
 				formData,
 				{

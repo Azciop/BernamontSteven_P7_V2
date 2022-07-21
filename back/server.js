@@ -1,7 +1,7 @@
 // Importing the Express module
 const express = require("express");
 const app = express();
-
+User = require('./app/models/user')
 // Importing the cors module
 const cors = require("cors");
 
@@ -23,6 +23,29 @@ const mongoSanitize = require("express-mongo-sanitize");
 // Init .env config
 require("dotenv").config();
 
+const bcrypt = require('bcrypt');
+
+User.findOne({ email:  process.env.adminEmail})
+.then(user => {
+  if (!user) { //--Hashage du mot de passe (fondtion asynchrone)
+  bcrypt.hash(
+      process.env.adminPassword, 
+      10)
+      .then(hash => {
+          const user = new User({
+              firstname: process.env.adminFirstName,
+              lastname: process.env.adminLastName,
+              email: process.env.adminEmail,
+              password: hash,
+              isAdmin: true,
+          })
+          user.save()
+              .then(() => console.log('Admin created'))
+              .catch(error => console.log(error));
+      })
+      .catch(error => console.log(error)); 
+  }
+})
 
 const corsOptions = {
   origin: '*',

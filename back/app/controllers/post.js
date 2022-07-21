@@ -8,7 +8,9 @@ const fs = require("fs");
 
 // Importing the express modules
 var express = require("express");
-
+const dotenv = require("dotenv");
+const result = dotenv.config();
+require("dotenv").config();
 
 // making a function and an export to find a specific post
 exports.readOnePost = (req, res, next) => {
@@ -157,7 +159,6 @@ exports.ratePost = (req, res, next) => {
 	});
 };
 
-// we make a function and a exports to creat a new post
 exports.createPost = (req, res, next) => {
 	const postObject = req.file
 		? {
@@ -166,7 +167,7 @@ exports.createPost = (req, res, next) => {
 		}
 		: { ...req.body };
 	const post = new Post({
-				...postObject
+				...postObject,		
 	});
 	post
 		.save()
@@ -174,13 +175,21 @@ exports.createPost = (req, res, next) => {
 		.catch((error) => res.status(400).json({ error }));
 };
 
+// imageUrl: `/images/${req.file.filename}`,
+
 exports.deletePost = (req, res, next) => {
+	User.findOne({ email: process.env.adminEmail })
     Post.findOne({ _id: req.params.id })
     .then(post=> {
+		// if (post.userId !== req.auth.userId || req.auth.userId !== process.env.adminUserId  ) { return res
+		// 	.status(403)
+		// 	.json(
+		// 		{ message: "Access denied. This post is not your own." },
+		// 	) }
       const filename = post.imageUrl.split('/images/')[1];
-      fs.unlink(`images/${filename}`, () => {//supprimer fichier
+      fs.unlink(`images/${filename}`, () => {
         Post.deleteOne({ _id: req.params.id })
-          .then(() => res.status(200).json({ message: 'Post supprimé !'}))
+          .then(() => res.status(200).json({ message: 'Post deleted !'}))
           .catch(error => res.status(400).json({ error }));
       });
     })

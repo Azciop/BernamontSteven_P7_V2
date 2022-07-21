@@ -49,6 +49,9 @@ export default {
 			}).then(response => {
 				console.log(response);
 				localStorage.setItem('token', response.data.token);
+				localStorage.setItem('firstname', response.data.firstname);
+				localStorage.setItem('lastname', response.data.lastname);
+				localStorage.setItem('userId', response.data.userId);
 				setAuthHeader(response.data.token);
 				this.$router.push('/accueil')
 			}).catch(error => {

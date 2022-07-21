@@ -10,10 +10,23 @@ const userSchema = mongoose.Schema({
 		unique: [true, "Email must be unique"],
 	},
 	password: { type: String, required: true },
-	firstname: {type: String, required: true, trim: true },
-    lastname: {type: String, required: true, trim: true },
-    // profilpicture: { type: String, required: true, trim: true },
+	firstname: { type: String, required: true, trim: true },
+	lastname: { type: String, required: true, trim: true },
+	isAdmin: { type: Boolean, required: true, default: false },
+	created_at: { type: Date },
+	updated_at: { type: Date }
+	// profilpicture: { type: String, required: true, trim: true },
 });
+
+userSchema.pre('save', function (next) {
+	now = new Date();
+	this.updated_at = now;
+	if (!this.created_at) {
+		this.created_at = now;
+	}
+	next();
+});
+
 
 // We are also using an uniqueValidor plugin to allow only an unique email when creating an account
 userSchema.plugin(uniqueValidator);
