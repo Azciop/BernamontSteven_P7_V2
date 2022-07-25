@@ -13,12 +13,10 @@
 			</ul>
 		</div>
 		<div id="create-post">
-			<button class="create-post_button text-left" @click="showModal = true">Quoi de neuf, {{ user.firstname }}
-				?</button>
+			<button class="create-post_button text-left" @click="showModal = true">Quoi de neuf, {{ user.firstname
+			}}?</button>
 			<transition name="fade" appear>
-				<div class="modal-overlay" v-if="showModal" @click="showModal = false">
-
-				</div>
+				<div class="modal-overlay" v-if="showModal" @click="showModal = false"></div>
 			</transition>
 			<transition name="slide" appear>
 				<div class="modal" v-if="showModal">
@@ -30,7 +28,7 @@
 					</span>
 					<form @submit.prevent="submitCreatePost" enctype="multipart/form-data">
 						<div>
-							<input class="textPost" name="createPost" placeholder="Quoi de neuf ?" v-model="content" />
+							<input class="textPost" name="createPost" placeholder="Quoi de neuf ?" v-model="post.content" />
 						</div>
 						<div class="center-sendbutton">
 							<input type="file" class="publishPost" v-on:change="selectFile" ref="file" />
@@ -41,43 +39,43 @@
 			</transition>
 		</div>
 		<div class="feed reverseoPosts ">
-			<div class="post" :key="post._id" v-for="post in posts">
-        
-			<button @click="showModifyPost = true" class="button button-modify-post">Modifier</button>
-            <transition name="fade" appear>
-				<div class="modal-overlay" v-if="showModifyPost" @click="showModifyPost = false">
+			<div class="post" :key="post._id" v-for="post in post">
 
-				</div>
-			</transition>
-            <transition name="slide" appear>
-				<div class="modifiyPostModal" v-if="showModifyPost">
-					<span>
-						<h2 class="center-text">Modifier votre publication</h2>
-						<div class="close-post_button" @click="showModifyPost = false">
-							<font-awesome-icon class="close_create_post" icon="fa-solid fa-circle-xmark" />
-						</div>
-					</span>
-					<form @submit.prevent="submitCreatePost" enctype="multipart/form-data">
-						<div>
-							<input class="textPost" name="createPost" placeholder="Quoi de neuf ?" v-model="content" />
-						</div>
-						<div class="center-sendbutton">
-							<input type="file" class="publishPost" v-on:change="selectFile" ref="file" />
-							<button type="submit" class="publishPost">Modifier</button>
-						</div>
-					</form>
-				</div>
-			</transition>
+				<button @click="showModifyPost = true" v-if="post.userId == user._id" class="button button-modify-post">Modifier</button>
+				<transition name="fade" appear>
+					<div class="modal-overlay" v-if="showModifyPost" @click="showModifyPost = false"></div>
+				</transition>
+				<transition name="slide" appear>
+					<div class="modifiyPostModal" v-if="showModifyPost">
+						<span>
+							<h2 class="center-text">Modifier votre publication</h2>
+							<div class="close-post_button" @click="showModifyPost = false">
+								<font-awesome-icon class="close_create_post" icon="fa-solid fa-circle-xmark" />
+							</div>
+						</span>
+						<form v-on:click.prevent="updatePost(post._id)" enctype="multipart/form-data">
+							<div>
+								<input class="textPost" name="createPost" placeholder="Quoi de neuf ?"
+									v-model="post.content" />
+							</div>
+							<div class="center-sendbutton">
+								<input type="file" class="publishPost" v-on:change="selectFile" ref="file" />
+								<button type="submit" @click="reloadPage" class="publishPost">Modifier</button>
+							</div>
+						</form>
+					</div>
+				</transition>
 				<button v-on:click.prevent="deletePost(post._id)" title="Supprimer ce post !"
 					class="delete-post-button">
-					
+
 					<font-awesome-icon class="delete-post-icon" icon="fa-solid fa-circle-xmark" />
 				</button>
 				<p class="authorName">{{ post.lastname }} {{ post.firstname }}</p>
 
 				<p class="authorText"> {{ post.content }} </p>
-				<div >
-					<img class="postImg" v-if=" post.imageUrl != ('http://127.0.0.1:3000undefined') " :src="post.imageUrl" />
+				<div>
+					<img class="postImg" v-if="post.imageUrl != ('http://127.0.0.1:3000undefined')"
+						:src="post.imageUrl" />
 				</div>
 				<div class="like-section">
 					<div class="like-setup">
@@ -117,26 +115,29 @@ export default {
 	name: "accueil",
 	data() {
 		return {
-			file: "",
-			content: "",
+			post: {
+				file: "",
+				content: "",
+			},
 			showModal: false,
 			showModifyPost: false,
-			posts: null,
+			// posts: null,
 			user: {
 				firstname: "",
 				lastname: "",
+				_id: "",
 			},
 
 		};
 	},
 	methods: {
 		selectFile() {
-			this.file = this.$refs.file.files[0];
+			this.post.file = this.$refs.file.files[0];
 		},
 		async submitCreatePost() {
 			const formData = new FormData();
-			formData.append('image', this.file);
-			formData.append('content', this.content);
+			formData.append('image', this.post.file);
+			formData.append('content', this.post.content);
 			formData.append('firstname', localStorage.getItem("firstname"));
 			formData.append('lastname', localStorage.getItem("lastname"));
 			formData.append('userId', localStorage.getItem("userId"));
@@ -152,6 +153,25 @@ export default {
 					this.file = "",
 				).then((response) => response.status >= 200 || response.status <= 201 ? location.reload(true) : console.log(response.statusText))
 				.catch(error => console.log(error));
+		},
+
+		updatePost(id) {
+			axios.put('http://127.0.0.1:3000/api/post/' + id, this.post,
+				{
+					headers: {
+						Authorization: "Bearer " + localStorage.getItem("token"),
+					},
+				})
+				.then(response => {
+					console.log(response);
+				}).catch(e => {
+					console.log(e);
+				}
+				)
+		},
+		reloadPage() {
+			alert('Votre poste a été modifiée')
+			window.location.reload();
 		},
 		logOut() {
 			localStorage.clear();
@@ -190,8 +210,8 @@ export default {
 			axios
 				.get('http://127.0.0.1:3000/api/post')
 				.then((response) => {
-					console.log("getPosts ", response.data);
-					this.posts = response.data;
+					console.log("getPosts", response.data);
+					this.post = response.data;
 				}).catch(error => {
 					console.log(error);
 				})
@@ -383,8 +403,8 @@ export default {
 	align-items: center;
 }
 
-.modifiyPostModal{
-    position: fixed;
+.modifiyPostModal {
+	position: fixed;
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
@@ -394,6 +414,7 @@ export default {
 	background-color: #4E5166;
 	border-radius: 20px;
 }
+
 .post {
 	position: relative;
 	width: 575px;
@@ -510,24 +531,28 @@ export default {
 	#app {
 		max-width: 650px;
 	}
+
 	#nav {
 		flex-direction: column;
-    align-items: flex-start;
-	
+		align-items: flex-start;
+
 	}
+
 	.logo {
 		margin-left: auto;
 		margin-right: auto;
-		margin-top:16px;
+		margin-top: 16px;
 		padding: 0;
 		left: 0;
 	}
+
 	#ul-nav {
 		display: flex;
 		justify-content: space-around;
 		width: 100%;
 		padding: 0;
 	}
+
 	.create-post_button {
 		width: 575px;
 	}

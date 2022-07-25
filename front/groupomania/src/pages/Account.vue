@@ -1,7 +1,9 @@
 	<template>
 	<div id="app">
 		<div id="nav">
+			<router-link to="/accueil">
 			<img class="logo" src="../assets/icon-left-font-monochrome-black.svg" />
+			</router-link>
 			<ul id="ul-nav">
 				<li>
 					<router-link class="text-decoration cursor-pointer" to="/accueil">Accueil
@@ -49,7 +51,7 @@
 										placeholder="Changer de mot de passe" />
 								</div>
 								<br />
-							<button v-on:click="updateUser" class="validate-modify-button">Modifier mes
+							<button v-on:click="reloadPage" class="validate-modify-button">Modifier mes
 								informations</button>
 							</form>
 						</div>
@@ -117,30 +119,22 @@ export default {
 				})
 				.catch((error) => console.log(error));
 		},
-		updateUser() {
-			const formData = new FormData();
-			formData.append("firstname", this.user.firstname);
-			formData.append("lastname", this.user.lastname);
-			formData.append("email", this.user.email);
-			formData.append("password", this.user.password);
-			// formData.append('_method', 'put');
-			axios
-				.put("http://127.0.0.1:3000/api/auth/", formData,
-					{
+
+	updateUser(){
+            axios.put('http://127.0.0.1:3000/api/auth/', this.user,
+			{
 						headers: {
 							Authorization: "Bearer " + localStorage.getItem("token"),
-							'Content-Type': 'multipart/form-data'
 						},
-					})
-				.then((formData) => {
-					console.log(formData)
-					this.user.firstname = "";
-					this.user.lastname = "";
-					this.user.email = "";
-					this.user.password = "";
-				})
-				.catch((error) => console.log(error));
-		},
+        },
+			)},
+			reloadPage() {
+				alert('Informations modifiées!')
+      			window.location.reload();
+				localStorage.setItem('firstname', this.user.firstname);
+				localStorage.setItem('lastname', this.user.lastname);
+				localStorage.setItem('email', this.user.email);
+    },
 		logOut() {
 			localStorage.clear();
 			this.$router.push('/login');
