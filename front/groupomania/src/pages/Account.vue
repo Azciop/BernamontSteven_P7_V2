@@ -2,7 +2,7 @@
 	<div id="app">
 		<div id="nav">
 			<router-link to="/accueil">
-			<img class="logo" src="../assets/icon-left-font-monochrome-black.svg" />
+				<img class="logo" src="../assets/icon-left-font-monochrome-black.svg" />
 			</router-link>
 			<ul id="ul-nav">
 				<li>
@@ -14,21 +14,21 @@
 				</li>
 			</ul>
 		</div>
+		<!-- Users Info -->
 		<div class="pannel">
-
 			<div class="userInfos">
 				<p>{{ user.lastname }}</p>
 				<p>{{ user.firstname }}</p>
 				<p>{{ user.email }}</p>
 			</div>
 			<div class="center-sendbutton">
-
+				<!-- Change users info -->
 				<div>
 					<transition name="slide" appear>
 						<div class="modal" v-if="showModal">
 							<font-awesome-icon class="close_modify-infos" @click="showModal = false"
 								icon="fa-solid fa-circle-xmark" />
-							<form class="modify-user-info" @submit.prevent="updateUser" >
+							<form class="modify-user-info" @submit.prevent="updateUser">
 								<div>
 									<p>Changer de prénom</p>
 									<input type="text" v-model="user.firstname" placeholder="Changer de prénom" />
@@ -51,14 +51,13 @@
 										placeholder="Changer de mot de passe" />
 								</div>
 								<br />
-							<button v-on:click="reloadPage" class="validate-modify-button">Modifier mes
-								informations</button>
+								<button v-on:click="reloadPage" class="validate-modify-button">Modifier mes
+									informations</button>
 							</form>
 						</div>
 					</transition>
 				</div>
 				<button class="button" @click="showModal = true">Modifier mes informations</button>
-
 				<button class="button" type="submit" v-on:click="deleteAccount">Supprimer mon compte</button>
 			</div>
 		</div>
@@ -92,6 +91,7 @@ export default {
 		this.getUser();
 	},
 	methods: {
+		// get users info
 		getUser() {
 			axios
 				.get("http://127.0.0.1:3000/api/auth/read", {
@@ -105,6 +105,7 @@ export default {
 				})
 				.catch((error) => console.log(error));
 		},
+		// delete account 
 		deleteAccount() {
 			axios
 				.delete("http://127.0.0.1:3000/api/auth/", {
@@ -119,22 +120,24 @@ export default {
 				})
 				.catch((error) => console.log(error));
 		},
-
-	updateUser(){
-            axios.put('http://127.0.0.1:3000/api/auth/', this.user,
-			{
-						headers: {
-							Authorization: "Bearer " + localStorage.getItem("token"),
-						},
-        },
-			)},
-			reloadPage() {
-				alert('Informations modifiées!')
-      			window.location.reload();
-				localStorage.setItem('firstname', this.user.firstname);
-				localStorage.setItem('lastname', this.user.lastname);
-				localStorage.setItem('email', this.user.email);
-    },
+		// update user infos 
+		updateUser() {
+			axios.put('http://127.0.0.1:3000/api/auth/', this.user,
+				{
+					headers: {
+						Authorization: "Bearer " + localStorage.getItem("token"),
+					},
+				},
+			)
+		},
+		reloadPage() {
+			alert('Informations modifiées!')
+			window.location.reload();
+			localStorage.setItem('firstname', this.user.firstname);
+			localStorage.setItem('lastname', this.user.lastname);
+			localStorage.setItem('email', this.user.email);
+		},
+		// logout user 
 		logOut() {
 			localStorage.clear();
 			this.$router.push('/login');

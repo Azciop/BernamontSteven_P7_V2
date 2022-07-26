@@ -55,14 +55,6 @@ exports.ratePost = (req, res, next) => {
 						$inc: { likes: +1 },
 						$push: { usersLiked: req.body.userId },
 					};
-					if (post.usersDisliked.includes(req.body.userId)) {
-						// if user wants to change his dislike to put a like, we push the like and we pull out the dislike
-						toChange = {
-							$inc: { likes: +1, dislikes: -1 },
-							$push: { usersLiked: req.body.userId },
-							$pull: { usersDisliked: req.body.userId },
-						};
-					}
 					// we update the result for the like
 					Post.updateOne({ _id: req.params.id }, toChange)
 						// then we send the result and the message
@@ -78,41 +70,10 @@ exports.ratePost = (req, res, next) => {
 					res.status(304).json();
 				}
 				break;
-			case -1:
-				// case 2, we add a dislike by using the push method
-				// we check if the user has already disliked the post
-				if (!post.usersDisliked.includes(req.body.userId)) {
-					// making an object with $inc and $push methods to add the dislike and the user's id
-					let toChange = {
-						$inc: { dislikes: req.body.like++ * -1 },
-						$push: { usersDisliked: req.body.userId },
-					};
-					if (post.usersLiked.includes(req.body.userId)) {
-						// if the user wants to change his like to a dislike, we push the dislike and we pull out the like
-						toChange = {
-							$inc: { likes: -1, dislikes: +1 },
-							$push: { usersDisliked: req.body.userId },
-							$pull: { usersLiked: req.body.userId },
-						};
-					}
-					// then we update the result
-					Post.updateOne({ _id: req.params.id }, toChange)
-						.then(post =>
-							res
-								.status(200)
-								.json(
-									{ message: "Disliked !", data: post }
-								)
-						)
-						.catch(error => res.status(400).json({ error }));
-				} else {
-					res.status(304).json();
-				}
-				break;
 			case 0:
 				Post.findOne({ _id: req.params.id })
 					.then(post => {
-						// case 3, we want to take off a like or a dislike
+						// case 2, we want to take off a like
 						if (post.usersLiked.includes(req.body.userId)) {
 							// using the updateOne function to update the result
 							Post.updateOne(
@@ -129,31 +90,11 @@ exports.ratePost = (req, res, next) => {
 										);
 								})
 								.catch(error => res.status(400).json({ error }));
-							// if it's a dislike, we take it off too
-						} else if (post.usersDisliked.includes(req.body.userId)) {
-							Post.updateOne(
-								{ _id: req.params.id },
-								{
-									//  we use a pull method to take off a dislike
-									$pull: { usersDisliked: req.body.userId },
-									$inc: { dislikes: -1 },
-								}
-							)
-								.then(post => {
-									// then we push the result
-									res
-										.status(200)
-										.json(
-											{ message: "Post undisliked !", data: post }
-										);
-								})
-								.catch(error => res.status(400).json({ error }));
 						} else {
 							res.status(304).json();
 						}
 					})
 					.catch(error => res.status(400).json({ error }));
-
 				break;
 		}
 	});
@@ -228,7 +169,7 @@ exports.updatePost = (req, res, next) => {
 					.catch(error => res.status(400).json({ error }));
 			}
 		})
-		.catch(error => res.status(500).json({ error }));
+		.catch(error => res.status(500).json(console.log(error)));
 };
 
 
@@ -259,5 +200,6 @@ exports.deletePost = (req, res, next) => {
 		}
 		})
 		.catch(error => res.status(500).json({ error }));
+		
 };
 

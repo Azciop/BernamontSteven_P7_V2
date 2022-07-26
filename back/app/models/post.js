@@ -7,13 +7,11 @@ const postSchema = mongoose.Schema({
 	content: { type: String, required: true, trim: true },
 	imageUrl: { type: String, trim: true },
 	likes: { type: Number, default: 0 },
-	dislikes: { type: Number, default: 0 },
 	usersLiked: [{ type: String, ref: "User" }],
-	usersDisliked: [{ type: String, ref: "User" }],
 	firstname: {type: String, required: true, trim: true },
     lastname: {type: String, required: true, trim: true },
 	created_at: { type: Date},
-	updated_at    : { type: Date }
+	updated_at: { type: Date }
 
 });
 

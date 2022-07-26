@@ -8,6 +8,7 @@
 			<p>
 				Déjà membre ?<router-link to="/login"> > Cliquez ici &lt;</router-link>
 			</p>
+			<!-- create account form -->
 			<form @submit.prevent="submitSignupForm">
 				<div>
 					<input type="email" name="email" placeholder="Adresse e-mail" v-model="userInfos.email" />
@@ -52,6 +53,7 @@ export default {
 		}
 	},
 	methods: {
+		// create account 
 		submitSignupForm() {
 			axios.post('http://127.0.0.1:3000/api/auth/signup', {
 				email: this.userInfos.email,

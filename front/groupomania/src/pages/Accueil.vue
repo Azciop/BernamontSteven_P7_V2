@@ -12,6 +12,7 @@
 				</li>
 			</ul>
 		</div>
+		<!-- create new post -->
 		<div id="create-post">
 			<button class="create-post_button text-left" @click="showModal = true">Quoi de neuf, {{ user.firstname
 			}}?</button>
@@ -28,7 +29,8 @@
 					</span>
 					<form @submit.prevent="submitCreatePost" enctype="multipart/form-data">
 						<div>
-							<input class="textPost" name="createPost" placeholder="Quoi de neuf ?" v-model="post.content" />
+							<input class="textPost" name="createPost" placeholder="Quoi de neuf ?"
+								v-model="post.content" />
 						</div>
 						<div class="center-sendbutton">
 							<input type="file" class="publishPost" v-on:change="selectFile" ref="file" />
@@ -38,10 +40,12 @@
 				</div>
 			</transition>
 		</div>
+		<!-- posts -->
 		<div class="feed reverseoPosts ">
 			<div class="post" :key="post._id" v-for="post in post">
-
-				<button @click="showModifyPost = true" v-if="post.userId == user._id" class="button button-modify-post">Modifier</button>
+				<!-- update a post -->
+				<button @click="showModifyPost = true" v-if="post.userId == user._id"
+					class="button button-modify-post">Modifier</button>
 				<transition name="fade" appear>
 					<div class="modal-overlay" v-if="showModifyPost" @click="showModifyPost = false"></div>
 				</transition>
@@ -65,11 +69,13 @@
 						</form>
 					</div>
 				</transition>
+				<!-- delete post -->
 				<button v-on:click.prevent="deletePost(post._id)" title="Supprimer ce post !"
 					class="delete-post-button">
 
 					<font-awesome-icon class="delete-post-icon" icon="fa-solid fa-circle-xmark" />
 				</button>
+				<!-- display post -->
 				<p class="authorName">{{ post.lastname }} {{ post.firstname }}</p>
 
 				<p class="authorText"> {{ post.content }} </p>
@@ -77,21 +83,27 @@
 					<img class="postImg" v-if="post.imageUrl != ('http://127.0.0.1:3000undefined')"
 						:src="post.imageUrl" />
 				</div>
+				<!-- like button -->
 				<div class="like-section">
-					<div class="like-setup">
-						<p class="likes">{{ post.likes }} like !</p>
-						<button type="submit" title="Aimer ce post !" class="button">
-							<font-awesome-icon icon="fa-solid fa-thumbs-up" /> Like !
-						</button>
+					<div v-if="post.usersLiked == user._id">
+						<div class="like-setup">
+							<p class="likes">{{ post.likes }} like !</p>
+							<button v-on:click="likePost(post._id)" style="color: pink" type="submit"
+								title="Aimer ce post !" class="button">
+								<font-awesome-icon icon="fa-solid fa-thumbs-up" /> Like !
+							</button>
+						</div>
 					</div>
-					<div class="like-setup">
-						<p class="likes">{{ post.dislikes }} dislike !</p>
-						<button type="submit" title="Ne pas aimer ce post !" class="button">
-							<font-awesome-icon icon="fa-solid fa-thumbs-down" /> Dislike !
-						</button>
+					<div v-else>
+						<div class="like-setup">
+							<p class="likes">{{ post.likes }} like !</p>
+							<button v-on:click="likePost(post._id)" type="submit" title="Aimer ce post !"
+								class="button">
+								<font-awesome-icon icon="fa-solid fa-thumbs-up" /> Like !
+							</button>
+						</div>
 					</div>
 				</div>
-
 			</div>
 		</div>
 	</div>
@@ -118,10 +130,11 @@ export default {
 			post: {
 				file: "",
 				content: "",
+				likes: 0,
+				usersLiked: false,
 			},
 			showModal: false,
 			showModifyPost: false,
-			// posts: null,
 			user: {
 				firstname: "",
 				lastname: "",
@@ -131,9 +144,11 @@ export default {
 		};
 	},
 	methods: {
+		// selec picture
 		selectFile() {
 			this.post.file = this.$refs.file.files[0];
 		},
+		// create post 
 		async submitCreatePost() {
 			const formData = new FormData();
 			formData.append('image', this.post.file);
@@ -154,7 +169,7 @@ export default {
 				).then((response) => response.status >= 200 || response.status <= 201 ? location.reload(true) : console.log(response.statusText))
 				.catch(error => console.log(error));
 		},
-
+		// update post 
 		updatePost(id) {
 			axios.put('http://127.0.0.1:3000/api/post/' + id, this.post,
 				{
@@ -173,10 +188,12 @@ export default {
 			alert('Votre poste a été modifiée')
 			window.location.reload();
 		},
+		// logout button 
 		logOut() {
 			localStorage.clear();
 			this.$router.push('/login');
 		},
+		// delete a post 
 		deletePost(id) {
 			axios
 				.delete("http://127.0.0.1:3000/api/post/" + id, {
@@ -189,10 +206,7 @@ export default {
 				})
 				.catch((error) => console.log("error", error));
 		},
-		logOut() {
-			localStorage.clear();
-			this.$router.push('/login');
-		},
+		// get user
 		getUser() {
 			axios
 				.get("http://127.0.0.1:3000/api/auth/read", {
@@ -206,6 +220,7 @@ export default {
 				})
 				.catch((error) => console.log(error));
 		},
+		// get all posts
 		getAllPost() {
 			axios
 				.get('http://127.0.0.1:3000/api/post')
@@ -216,6 +231,20 @@ export default {
 					console.log(error);
 				})
 		},
+		// like a post 
+		likePost(id) {
+			axios
+				.post('http://127.0.0.1:3000/api/post/like/' + id, this.post,  {
+					headers: {
+						Authorization: "Bearer " + localStorage.getItem("token"),
+					},
+				})
+				.then((response) => {
+					console.log(response.data);
+					this.$set(this.post, 'usersLiked', this.post.usersLiked !== response?.data?._id)
+				})
+				.catch((error) => console.log(error));
+		}
 	},
 	mounted() {
 		this.getUser();
