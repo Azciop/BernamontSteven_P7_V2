@@ -119,60 +119,39 @@ exports.createPost = (req, res, next) => {
 // imageUrl: `/images/${req.file.filename}`,
 
 exports.updatePost = (req, res, next) => {
-	// Using the findOne method to find the post
-	Post.findOne({ _id: req.params.id })
-		.then(post => {
-			if (req.auth.userId !== post.userId) {
-				return res
-					.status(403)
-					.json(
-						{ message: "Access denied. This post is not your own." },
-					)
+	const postObject = req.file ?
+		{
+			...(req.body.post),
+			imageUrl: `/images/${req.file.filename}`,
+		} : { ...req.body }
+
+	Post.findOne({ _id: req.params.id }).then(
+		(post) => {
+			if (!post) {
+				return res.status(404).json({
+					error: new Error('Unable to find the post')
+				})
 			}
-			// we make a const to find the image we want to delete in case of a image change
-			// const filename = post.imageUrl.split("/images/")[1];
-			if (req.file) {
-				// we make a object that contains the new values and the new image
-				const postObject = {
-					...JSON.parse(req.body.post),
-					imageUrl: `/images/${req.file.filename}`,
-				};
-				// We use the unlink method to delete the old image
-				fs.unlink(`images/${filename}`, () => {
-					// using the updateOne function to update the values if the image has been modified
-					Post.updateOne(
-						{ _id: req.params.id },
-						{ ...postObject, _id: req.params.id }
-					)
-						// then we send the message
-						.then(post =>
-							res
-								.status(200)
-								.json(
-									{ message: "Your post has been modified", data: post },
-								)
-						)
-						.catch(error => res.status(400).json({ error }));
-				});
-			} else {
-				// else, we just update the new values without changing the image
-				Post.updateOne(
-					{ _id: req.params.id },
-					{ ...req.body, _id: req.params.id }
-				)
-					// then, we send the message
-					.then(post =>
-						res
-							.status(200)
-							.json(
-								{ message: "Your post has been modified", data: post },
-							)
-					)
+			User.findOne({ email: process.env.adminEmail })
+				.then(user => {
+					const adminUserId = user._id.toString()
+					if (post.userId !== req.auth.userId && req.auth.userId !== adminUserId) {
+						return res.status(403).json({
+							error: new Error('access denied')
+						})
+					}
+				})
+			const fileName = post.imageUrl.split('/images/')[1]//
+			fs.unlink(`images/${fileName}`, () => {
+
+				Post.updateOne({ _id: req.params.id }, { ...postObject, _id: req.params.id })
+					.then(() => res.status(200).json({ message: 'Your post has been modified', data: post }))
 					.catch(error => res.status(400).json({ error }));
-			}
-		})
-		.catch(error => res.status(500).json(console.log(error)));
+			})
+		}
+	)
 };
+
 
 
 exports.deletePost = (req, res, next) => {
