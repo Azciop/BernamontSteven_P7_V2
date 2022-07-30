@@ -6,8 +6,6 @@ import Account from './pages/Account.vue';
 import PageNotFound from './pages/pageNotFound.vue';
 import adminDashboard from './pages/adminDashboard.vue';
 
-
-
 const routes = [
     {
         path: '/accueil',

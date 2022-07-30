@@ -30,7 +30,7 @@
 					<form @submit.prevent="submitCreatePost" enctype="multipart/form-data">
 						<div>
 							<input class="textPost" name="createPost" placeholder="Quoi de neuf ?"
-								v-model="post.content" />
+								v-model="posts.content" />
 						</div>
 						<div class="center-sendbutton">
 							<input type="file" class="publishPost" v-on:change="selectFile" ref="file" />
@@ -42,9 +42,9 @@
 		</div>
 		<!-- posts -->
 		<div class="feed reverseoPosts ">
-			<div class="post" :key="post._id" v-for="post in post">
+			<div class="post" :key="post._id" v-for="post in posts">
 				<!-- update a post -->
-				<button @click="showModifyPost = true" v-if="post.userId == user._id"
+				<button @click="showModifyPost = true" v-if="post.userId == user._id  || user.isAdmin == true"
 					class="button button-modify-post">Modifier</button>
 				<transition name="fade" appear>
 					<div class="modal-overlay" v-if="showModifyPost" @click="showModifyPost = false"></div>
@@ -57,21 +57,21 @@
 								<font-awesome-icon class="close_create_post" icon="fa-solid fa-circle-xmark" />
 							</div>
 						</span>
-						<form v-on:click.prevent="updatePost(post._id)" enctype="multipart/form-data">
+						<form enctype="multipart/form-data">
 							<div>
 								<input class="textPost" name="createPost" placeholder="Quoi de neuf ?"
 									v-model="post.content" />
 							</div>
 							<div class="center-sendbutton">
-								<input type="file" class="publishPost" v-on:change="selectFile" ref="file" />
-								<button type="submit" @click="reloadPage" class="publishPost">Modifier</button>
+								<input type="file" class="publishPost" id="changePicture" v-on:change="selectFile" ref="file" />
+								<button type="submit" v-on:click.prevent="updatePost(post._id)" class="publishPost">Modifier</button>
 							</div>
 						</form>
 					</div>
 				</transition>
 				<!-- delete post -->
 				<button v-on:click.prevent="deletePost(post._id)" title="Supprimer ce post !"
-					class="delete-post-button">
+					class="delete-post-button" v-if="post.userId == user._id || user.isAdmin == true">
 
 					<font-awesome-icon class="delete-post-icon" icon="fa-solid fa-circle-xmark" />
 				</button>
@@ -127,32 +127,30 @@ export default {
 	name: "accueil",
 	data() {
 		return {
-			post: {
-				file: "",
-				content: "",
-				likes: 0,
-				usersLiked: false,
-			},
-			showModal: false,
-			showModifyPost: false,
-			user: {
-				firstname: "",
-				lastname: "",
-				_id: "",
-			},
-
+		posts: [],
+        showModal: false,
+        showModifyPost: false,
+        user: {
+            firstname: "",
+            lastname: "",
+            _id: "",
+        },
 		};
 	},
+	mounted() {
+		this.getUser();
+		this.getAllPost();
+	},
 	methods: {
-		// selec picture
+		// select picture
 		selectFile() {
-			this.post.file = this.$refs.file.files[0];
+			this.posts.file = this.$refs.file.files[0];
 		},
 		// create post 
 		async submitCreatePost() {
 			const formData = new FormData();
-			formData.append('image', this.post.file);
-			formData.append('content', this.post.content);
+			formData.append('image', this.posts.file);
+			formData.append('content', this.posts.content);
 			formData.append('firstname', localStorage.getItem("firstname"));
 			formData.append('lastname', localStorage.getItem("lastname"));
 			formData.append('userId', localStorage.getItem("userId"));
@@ -166,27 +164,9 @@ export default {
 					console.log(formData),
 					this.content = "",
 					this.file = "",
-				).then((response) => response.status >= 200 || response.status <= 201 ? location.reload(true) : console.log(response.statusText))
+				).then((response) => response.status >= 200 || response.status <= 201 ? 
+				 location.reload(true) : console.log(response.statusText))
 				.catch(error => console.log(error));
-		},
-		// update post 
-		updatePost(id) {
-			axios.put('http://127.0.0.1:3000/api/post/' + id, this.post,
-				{
-					headers: {
-						Authorization: "Bearer " + localStorage.getItem("token"),
-					},
-				})
-				.then(response => {
-					console.log(response);
-				}).catch(e => {
-					console.log(e);
-				}
-				)
-		},
-		reloadPage() {
-			alert('Votre poste a été modifiée')
-			window.location.reload();
 		},
 		// logout button 
 		logOut() {
@@ -222,15 +202,38 @@ export default {
 		},
 		// get all posts
 		getAllPost() {
-			axios
-				.get('http://127.0.0.1:3000/api/post')
-				.then((response) => {
-					console.log("getPosts", response.data);
-					this.post = response.data;
-				}).catch(error => {
-					console.log(error);
-				})
-		},
+        axios
+            .get('http://127.0.0.1:3000/api/post')
+            .then((response) => {
+                console.log("getPosts", response.data);
+                this.posts = response.data;
+            }).catch(error => {
+                console.log(error);
+            })
+    },
+		// update post 
+		updatePost(id) {
+        //the find part
+        const postToBeFound=this.posts.find((post)=>post._id===id)
+        console.log(postToBeFound)
+        const formData = new FormData();
+        formData.append("image", this.post[1].file);
+        formData.append("content", this.post[1].content);
+        axios.put('http://127.0.0.1:3000/api/post/' + id, formData,
+            {
+                headers: {
+                    Authorization: "Bearer " + localStorage.getItem("token"),
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => {
+                console.log(response);
+                location.reload("/accueil");
+            }).catch(e => {
+                console.log(e);
+            }
+            )
+    },
 		// like a post 
 		likePost(id) {
 			axios
@@ -246,9 +249,26 @@ export default {
 				.catch((error) => console.log(error));
 		}
 	},
-	mounted() {
-		this.getUser();
-		this.getAllPost();
+	computed: {
+		// // update post 
+		// updatePost(id) {
+		// 	const formData = new FormData();
+		// 	formData.append("image", this.post[0].file);
+		// 	formData.append("content", this.post[0].content);
+		// 	axios.put('http://127.0.0.1:3000/api/post/' + id, formData,
+		// 		{
+		// 			headers: {
+		// 				Authorization: "Bearer " + localStorage.getItem("token"),
+		// 				'Content-Type': 'application/json',
+		// 			},
+		// 		})
+		// 		.then(response => {
+		// 			console.log(response);
+		// 		}).catch(e => {
+		// 			console.log(e);
+		// 		}
+		// 		)
+		// },
 	},
 }
 

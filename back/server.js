@@ -27,7 +27,7 @@ const bcrypt = require('bcrypt');
 
 User.findOne({ email:  process.env.adminEmail})
 .then(user => {
-  if (!user) { //--Hashage du mot de passe (fondtion asynchrone)
+  if (!user) {
   bcrypt.hash(
       process.env.adminPassword, 
       10)

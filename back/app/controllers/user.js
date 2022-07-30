@@ -12,12 +12,6 @@ const dotenv = require("dotenv");
 const result = dotenv.config();
 require("dotenv").config();
 
-const CryptoJS = require("crypto-js");
-
-// Importing express
-var express = require("express");
-
-
 function emailValidator(email) {
 	const reg =
 		/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -29,12 +23,9 @@ exports.signup = (req, res, next) => {
 	if (!emailValidator(req.body.email)) {
 		return res.status(400).json({ error: "invalid email" });
 	}
-	// making the email encrypting function
 	bcrypt
 		.hash(req.body.password, 10)
 		.then(hash => {
-			// we get the encrypted email and we creat the user object
-			// const emailEncrypted = encryptEmail(req.body.email);
 			const user = new User({
 				firstname: req.body.firstname,
 				lastname: req.body.lastname,
@@ -59,8 +50,6 @@ exports.signup = (req, res, next) => {
 
 // making the login function
 exports.login = (req, res, next) => {
-	// we get the encrypted email
-	// const emailCryptoJS = encryptEmail(req.body.email);
 	// using findOne to find the user
 	User.findOne({ email: req.body.email })
 		.then(user => {
@@ -91,9 +80,6 @@ exports.login = (req, res, next) => {
 		.catch(error => res.status(500).json({ error }));
 };
 
-//
-// RGPD
-//
 
 // find user and send infos in JSON
 exports.readUser = (req, res, next) => {

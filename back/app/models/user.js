@@ -15,7 +15,6 @@ const userSchema = mongoose.Schema({
 	isAdmin: { type: Boolean, required: true, default: false },
 	created_at: { type: Date },
 	updated_at: { type: Date }
-	// profilpicture: { type: String, required: true, trim: true },
 });
 
 userSchema.pre('save', function (next) {

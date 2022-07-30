@@ -122,14 +122,16 @@ exports.updatePost = (req, res, next) => {
 	// Using the findOne method to find the post
 	Post.findOne({ _id: req.params.id })
 		.then(post => {
-			if (req.auth.userId !== post.userId) { return res
-				.status(403)
-				.json(
-					{ message: "Access denied. This post is not your own." },
-				) }
+			if (req.auth.userId !== post.userId) {
+				return res
+					.status(403)
+					.json(
+						{ message: "Access denied. This post is not your own." },
+					)
+			}
 			// we make a const to find the image we want to delete in case of a image change
-			const filename = post.imageUrl.split("/images/")[1];
-			if (req.file ) {
+			// const filename = post.imageUrl.split("/images/")[1];
+			if (req.file) {
 				// we make a object that contains the new values and the new image
 				const postObject = {
 					...JSON.parse(req.body.post),
@@ -174,32 +176,31 @@ exports.updatePost = (req, res, next) => {
 
 
 exports.deletePost = (req, res, next) => {
-	User.findOne({ email: process.env.adminEmail })
 	Post.findOne({ _id: req.params.id })
 		.then(post => {
-			if (post.userId !== req.auth.userId // || req.auth.userId !== process.env.adminUserId  
-			) {
-				return res
-					.status(403)
-					.json(
-						{ message: "Access denied. This post is not your own." },
-					)
-			}
-			if (req.file )
-			{
-			const filename = post.imageUrl.split('/images/')[1];
-			fs.unlink(`images/${filename}`, () => {
+			if (!post) {
+				return res.status(404).json({ message: 'Acces denied !' })
+			} User.findOne({ email: process.env.adminEmail })
+				.then(user => {
+					const adminUserId = user._id.toString()
+					if (post.userId !== req.auth.userId && req.auth.userId !== adminUserId) {
+						return res.status(403).json({ message: 'Acces denied, this post is not your own !' })
+					}
+				})
+			if (req.file) {
+				const filename = post.imageUrl.split('/images/')[1];
+				fs.unlink(`images/${filename}`, () => {
+					Post.deleteOne({ _id: req.params.id })
+						.then(() => res.status(200).json({ message: 'Post deleted !' }))
+						.catch(error => res.status(400).json({ error }));
+				});
+			} else {
 				Post.deleteOne({ _id: req.params.id })
 					.then(() => res.status(200).json({ message: 'Post deleted !' }))
 					.catch(error => res.status(400).json({ error }));
-			});
-		} else {
-			Post.deleteOne({ _id: req.params.id })
-					.then(() => res.status(200).json({ message: 'Post deleted !' }))
-					.catch(error => res.status(400).json({ error }));
-		}
+			}
 		})
 		.catch(error => res.status(500).json({ error }));
-		
+
 };
 
