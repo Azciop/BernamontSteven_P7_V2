@@ -54,6 +54,7 @@ export default {
 				localStorage.setItem('firstname', response.data.firstname);
 				localStorage.setItem('lastname', response.data.lastname);
 				localStorage.setItem('userId', response.data.userId);
+				localStorage.setItem('isAdmin', response.data.isAdmin);
 				setAuthHeader(response.data.token);
 				this.$router.push('/accueil')
 			}).catch(error => {

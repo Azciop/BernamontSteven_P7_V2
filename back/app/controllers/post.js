@@ -43,59 +43,42 @@ exports.readAllPosts = (req, res, next) => {
 
 // making a function using a switch to make the like system functionnal
 exports.ratePost = (req, res, next) => {
-	// using findOne function to find the post
+	console.log(req.body.userId)
+	//using findOne function to find the post
 	Post.findOne({ _id: req.params.id }).then(post => {
-		switch (req.body.like) {
-			//   case one, we add a like by using a push method
-			case 1:
-				// Making a if to check if user didn't liked the post yet
-				if (!post.usersLiked.includes(req.body.userId)) {
-					// making a object with $inc and $push methods to add a like and to add the user's id
-					let toChange = {
-						$inc: { likes: +1 },
-						$push: { usersLiked: req.body.userId },
-					};
-					// we update the result for the like
-					Post.updateOne({ _id: req.params.id }, toChange)
-						// then we send the result and the message
-						.then(post =>
-							res
-								.status(200)
-								.json(
-									{ message: "Liked !", data: post }
-								)
+		if (!post.usersLiked.includes(req.body.userId)) {
+			// making a object with $inc and $push methods to add a like and to add the user's id
+			let toChange = {
+				$inc: { likes: +1 },
+				$push: { usersLiked: req.body.userId },
+			};
+			// we update the result for the like
+			Post.updateOne({ _id: req.params.id }, toChange)
+				// then we send the result and the message
+				.then(post =>
+					res
+						.status(200)
+						.json(
+							{ message: "Liked !", data: post }
 						)
-						.catch(error => res.status(400).json({ error }));
-				} else {
-					res.status(304).json();
-				}
-				break;
-			case 0:
-				Post.findOne({ _id: req.params.id })
-					.then(post => {
-						// case 2, we want to take off a like
-						if (post.usersLiked.includes(req.body.userId)) {
-							// using the updateOne function to update the result
-							Post.updateOne(
-								{ _id: req.params.id },
-								//  we use a pull method to take off a like
-								{ $pull: { usersLiked: req.body.userId }, $inc: { likes: -1 } }
-							)
-								.then(post => {
-									// then we send the result and the message
-									res
-										.status(200)
-										.json(
-											{ message: "Post unliked", data: post }
-										);
-								})
-								.catch(error => res.status(400).json({ error }));
-						} else {
-							res.status(304).json();
-						}
-					})
-					.catch(error => res.status(400).json({ error }));
-				break;
+				)
+				.catch(error => res.status(400).json({ error }));
+		} else if (post.usersLiked.includes(req.body.userId)) {
+			// using the updateOne function to update the result
+			Post.updateOne(
+				{ _id: req.params.id },
+				//  we use a pull method to take off a like
+				{ $pull: { usersLiked: req.body.userId }, $inc: { likes: -1 } }
+			)
+				.then(post => {
+					// then we send the result and the message
+					res
+						.status(200)
+						.json(
+							{ message: "Post unliked", data: post }
+						);
+				})
+				.catch(error => res.status(400).json({ error }));
 		}
 	});
 };
@@ -116,23 +99,26 @@ exports.createPost = (req, res, next) => {
 		.catch((error) => res.status(400).json({ error }));
 };
 
-// imageUrl: `/images/${req.file.filename}`,
 exports.updatePost = (req, res, next) => {
-	console.log('test3', req.body)
 	const postObject = req.file ?
 		{
-			...(req.body.post),
+			...(req.body),
 			imageUrl: `/images/${req.file.filename}`,
 		} : { ...req.body }
 	Post.findOne({ _id: req.params.id }).then(
 		(post) => {
-			if (!post) {
-				return res.status(404).json({
-					error: new Error('Cant find this post !')
-				})
+			if (req.auth.userId == post.userId || req.auth.isAdmin == true) {
+				if (!post) {
+					return res.status(404).json({
+						error: new Error('Cant find this post !')
+					})
+				}
+				Post.updateOne({ _id: req.params.id }, { ...postObject, _id: req.params.id })
+					.then(() => res.status(200).json({ message: 'Post modified !', data: post }))
 			}
-			Post.updateOne({ _id: req.params.id }, { ...postObject, _id: req.params.id })
-				.then(() => res.status(200).json({ message: 'Post modified !', data: post }))
+			else {
+				res.status(403).json({ message: "Dont do this" })
+			}
 		}
 	)
 };

@@ -88,6 +88,9 @@ export default {
 		};
 	},
 	mounted() {
+		if (!localStorage.getItem("userId")) {
+			this.$router.push('/signup')
+		}
 		this.getUser();
 	},
 	methods: {
@@ -100,7 +103,6 @@ export default {
 					},
 				})
 				.then((response) => {
-					console.log("response", response);
 					this.user = response.data;
 				})
 				.catch((error) => console.log(error));

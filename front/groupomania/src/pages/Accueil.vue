@@ -44,7 +44,8 @@
 		<div class="feed reverseoPosts ">
 			<div class="post" :key="post._id" v-for="post in posts">
 				<!-- update a post -->
-				<button @click="showModifyPost = true" v-if="post.userId == user._id || user.isAdmin == true"
+				<button v-on:click.prevent="getThisPost(post._id)" @click="showModifyPost = true"
+					v-if="post.userId == user._id || user.isAdmin == true"
 					class="button button-modify-post">Modifier</button>
 				<transition name="fade" appear>
 					<div class="modal-overlay" v-if="showModifyPost" @click="showModifyPost = false"></div>
@@ -86,24 +87,21 @@
 						:src="post.imageUrl" />
 				</div>
 				<!-- like button -->
-				<div class="like-section">
-					<div v-if="post.usersLiked == user._id">
-						<div class="like-setup">
-							<p class="likes">{{ post.likes }} like !</p>
-							<button v-on:click="likePost(post._id)" style="color: pink" type="submit"
-								title="Aimer ce post !" class="button">
-								<font-awesome-icon icon="fa-solid fa-thumbs-up" /> Like !
-							</button>
-						</div>
+				<div v-if="post.usersLiked == user._id">
+					<div class="like-setup">
+						<p class="likes">{{ post.likes }} like !</p>
+						<button v-on:click="likePost(post._id)" style="color: pink" type="submit"
+							title="Aimer ce post !" class="button">
+							<font-awesome-icon icon="fa-solid fa-thumbs-up" /> Like !
+						</button>
 					</div>
-					<div v-else>
-						<div class="like-setup">
-							<p class="likes">{{ post.likes }} like !</p>
-							<button v-on:click="likePost(post._id)" type="submit" title="Aimer ce post !"
-								class="button">
-								<font-awesome-icon icon="fa-solid fa-thumbs-up" /> Like !
-							</button>
-						</div>
+				</div>
+				<div v-else>
+					<div class="like-setup">
+						<p class="likes">{{ post.likes }} like !</p>
+						<button v-on:click="likePost(post._id)" type="submit" title="Aimer ce post !" class="button">
+							<font-awesome-icon icon="fa-solid fa-thumbs-up" /> Like !
+						</button>
 					</div>
 				</div>
 			</div>
@@ -111,19 +109,14 @@
 	</div>
 </template>
 
-
 <script>
 
 import * as Vue from "vue";
 import axios from "axios";
 import VueAxios from "vue-axios";
 
-
-
 const app = Vue.createApp();
 app.use(VueAxios, axios);
-
-
 
 export default {
 	name: "accueil",
@@ -146,8 +139,10 @@ export default {
 			},
 		};
 	},
-
 	mounted() {
+		if (!localStorage.getItem("userId")) {
+			this.$router.push('/signup')
+		}
 		this.getUser();
 	},
 	methods: {
@@ -159,7 +154,7 @@ export default {
 		async submitCreatePost() {
 			let formData = new FormData();
 			formData.append('image', this.post.file);
-			formData.append('content', this.post.content);
+			formData.append('content', this.posts.content);
 			formData.append('firstname', localStorage.getItem("firstname"));
 			formData.append('lastname', localStorage.getItem("lastname"));
 			formData.append('userId', localStorage.getItem("userId"));
@@ -171,8 +166,6 @@ export default {
 					}
 				}).then(
 					console.log(formData),
-					this.content = "",
-					this.file = "",
 				).then((response) => response.status >= 200 || response.status <= 201 ?
 					location.reload(true) : console.log(response.statusText))
 				.catch(error => console.log(error));
@@ -223,22 +216,34 @@ export default {
 		selectNewFile(e) {
 			this.post.file = e.target.files[0];
 		},
+		getThisPost(id) {
+			axios
+				.get('http://127.0.0.1:3000/api/post/' + id,)
+				.then((response) => {
+					console.log("getThisPost", response.data._id);
+					this.post = response.data;
+					localStorage.setItem('ThisPostId', response.data._id);
+				}).catch(error => {
+					console.log(error);
+				})
+		},
 		// update post 
-		updatePost(id) {
-			console.log(this.post)
+		updatePost() {
+			const thisPostId = localStorage.getItem("ThisPostId")
 			let formData = new FormData();
 			formData.append("image", this.post.file);
 			formData.append("content", this.post.content);
-			axios.put('http://127.0.0.1:3000/api/post/' + id, formData,
+			axios.put('http://127.0.0.1:3000/api/post/' + thisPostId, formData,
 				{
 					headers: {
 						Authorization: "Bearer " + localStorage.getItem("token"),
-						'Content-Type': 'application/json',
+						"Content-Type": "multipart/form-data",
 					},
 				})
 				.then(response => {
-					console.log(response);
-					 location.reload("/accueil");
+					this.posts = response.data;
+					this.getAllPost();
+					this.showModifyPost = false
 				}).catch(e => {
 					console.log(e);
 				}
@@ -246,21 +251,21 @@ export default {
 		},
 		// like a post 
 		likePost(id) {
+			let userId = localStorage.getItem('userId');
 			axios
-				.post('http://127.0.0.1:3000/api/post/like/' + id, this.post, {
+				.post('http://127.0.0.1:3000/api/post/like/' + id, { userId }, {
 					headers: {
 						Authorization: "Bearer " + localStorage.getItem("token"),
 					},
 				})
 				.then((response) => {
 					console.log(response.data);
-					this.$set(this.post, 'usersLiked', this.post.usersLiked !== response?.data?._id)
+					this.getAllPost();
 				})
 				.catch((error) => console.log(error));
 		}
 	},
 }
-
 
 </script>
 
@@ -481,14 +486,14 @@ export default {
 	margin: 0px 0px 20px 0px;
 }
 
-.like-section {
+/* .like-section {
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
 	align-items: left;
 	border-bottom: black;
 	font-size: 15px;
-}
+} */
 
 .like-setup {
 	display: flex;

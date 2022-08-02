@@ -9,7 +9,8 @@ module.exports = (req, res, next) => {
 		const decodedToken = jwt.verify(token, "RANDOM_TOKEN_SECRET");
 		// then we get the userId from our token
 		const userId = decodedToken.userId;
-		req.auth = { userId };
+		const isAdmin = decodedToken.isAdmin;
+		req.auth = { userId, isAdmin };
 		// then we compare our userId with our userId from the token
 		if (req.body.userId && req.body.userId !== userId) {
 			// if not the same userId, throw an error, else, we use the next function to push our result
